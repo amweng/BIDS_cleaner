@@ -57,14 +57,12 @@ function fixJson(jsonFiles)
         dirtyStr = convertCharsToStrings(chars);
         disp(dirtyStr);
         fclose(currentFile);
+       
         currentFilenameStr = string(currentFilename);
     
         cleanedStr = spaceToUnderscore(dirtyStr);
         if(currentFilenameStr ~= 'dataset_description.json')
             cleanedStr = spaceToUnderscore(dirtyStr);
-     
-            
-            %TODO save json file back to where it came from
             fprintf(currentFile,'%s',cleanedStr);
             
         else
