@@ -79,7 +79,7 @@ function fixJson(jsonFiles,dataDirectory)
         currentFile = fopen(currentFilename,'r+');
         
         if (currentFile == -1)
-            msg = ("Error opening: " + currentFilename);
+            msg = ("Error opening: " + currentFilename + ". check correct path present");
             error(msg);
             break
         end 
@@ -101,7 +101,7 @@ function fixJson(jsonFiles,dataDirectory)
    
             filename = fullfile(dataDirectory, currentFilenameStr);
             fid = fopen(filename, 'w');
-            if fid == -1, error('Cannot create JSON file'); end
+            if fid == -1, error('Could not create JSON file'); end
             fwrite(fid, cleanStr, 'char');
             fclose(fid);
             disp("repair COMPLETE on: " + currentFilenameStr + " ...");
