@@ -8,7 +8,7 @@ function BIDS_tool()
     directory = '/Users/andrewweng/Data/ds000107';
     listContents(directory);
     jsonFiles = (trackJson(directory));
-    fixJson(jsonFiles);
+    fixJson(jsonFiles,directory);
     disp('done')
 end
 
@@ -43,7 +43,7 @@ end
 % fixes JSON files
 %------------------------------------------------------------------------
 
-function fixJson(jsonFiles)
+function fixJson(jsonFiles,dataDirectory)
 
     
     for i = 1:numel(jsonFiles)
@@ -62,10 +62,29 @@ function fixJson(jsonFiles)
         cleanedStr = spaceToUnderscore(dirtyStr);
         if(currentFilenameStr ~= 'dataset_description.json')
             cleanedStr = spaceToUnderscore(dirtyStr);
+            
+            
+            
+            dirtyJsonStr = jsonencode(cleanedStr);
+            
+            
+            stepOneStr = strrep(dirtyJsonStr,'\n','');
+            stepTwoStr = strrep(stepOneStr,'""','');
+            stepThreeStr = strrep(stepTwoStr,'\','');
+            stepFourStr = strrep(stepThreeStr,'"{','{');
+            cleanStr = strrep(stepFourStr,'}"','}');
+          %  disp(cleanJsonStr);
+            
+            disp(dataDirectory);
+            filename = fullfile(dataDirectory, currentFilenameStr);
+            fid = fopen(filename, 'w');
+            if fid == -1, error('Cannot create JSON file'); end
+            fwrite(fid, cleanStr, 'char');
+            fclose(fid);
      
             
             %TODO save json file back to where it came from
-            fprintf(currentFile,'%s',cleanedStr);
+         %   fprintf(currentFile,'%s',cleanedStr);
             
         else
             cleanedStr = dirtyStr;
