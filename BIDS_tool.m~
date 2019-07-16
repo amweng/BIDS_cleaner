@@ -9,7 +9,7 @@ function BIDS_tool()
     listContents(directory);
     jsonFiles = (trackJson(directory));
     fixJson(jsonFiles,directory);
-    disp('done')
+    disp('BIDS repair complete')
 end
 
 
@@ -22,7 +22,7 @@ function listContents(rootDirectory)
     for index = 1:numel(folderInfo)
         if(folderInfo(index).name ~= "." && folderInfo(index).name ~= "..")
             a = folderInfo(index).name;
-            disp(folderInfo(index).name);
+            %disp(folderInfo(index).name);
         end
     end
 end
@@ -49,32 +49,36 @@ function fixJson(jsonFiles,dataDirectory)
     for i = 1:numel(jsonFiles)
         
         %displays contents of json files
-        disp(jsonFiles(i).name);
+        disp(" ");
+        disp("file being repaired: " + jsonFiles(i).name);
+        disp("_________________________________________________________");
         currentFilename = jsonFiles(i).name;
         currentFile = fopen(currentFilename,'r+');
         raw = fread(currentFile);
         chars = char(raw);
         dirtyStr = convertCharsToStrings(chars);
-        disp(dirtyStr);
+        %disp(dirtyStr);
         fclose(currentFile);
         currentFilenameStr = string(currentFilename);
     
-        cleanedStr = spaceToUnderscore(dirtyStr);
         if(currentFilenameStr ~= 'dataset_description.json')
-            cleanedStr = spaceToUnderscore(dirtyStr);
             
+            disp("Data :" + dirtyStr);
+           
             
-            
-            dirtyJsonStr = jsonencode(cleanedStr);
+            stepZeroStr = spaceToUnderscore(dirtyStr);
+            dirtyJsonStr = jsonencode(stepZeroStr);
             
             
             stepOneStr = strrep(dirtyJsonStr,'\n','');
             stepTwoStr = strrep(stepOneStr,'""','');
             stepThreeStr = strrep(stepTwoStr,'\','');
-            stepFourStr = strrep(stepThreeStr,'"{','{'
-          %  disp(cleanJsonStr);
+            stepFourStr = strrep(stepThreeStr,'"{','{');
+            cleanStr = strrep(stepFourStr,'}"','}');
+          
+            disp("Fixed :disp(cleanJsonStr);
             
-            disp(dataDirectory);
+            %disp(dataDirectory);
             filename = fullfile(dataDirectory, currentFilenameStr);
             fid = fopen(filename, 'w');
             if fid == -1, error('Cannot create JSON file'); end
@@ -87,9 +91,10 @@ function fixJson(jsonFiles,dataDirectory)
             
         else
             cleanedStr = dirtyStr;
+            disp(" ");
+            disp("no repairs needed on dataset_description.json ...");
         end
-        
-        disp(cleanedStr);
+        disp(" ");
         
         
         
