@@ -174,7 +174,7 @@ function fixSubjectTSV(subjectPaths,dataDirectory)
             while ischar(tline)
                 onsetDurations = sscanf(tline,'%f');
                 
-                if  ~isempty(onsetDurations) 
+                if  numel(onsetDurations) == 2
                      
                         tlines{end+1,1} = tline;
            
