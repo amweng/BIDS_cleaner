@@ -8,15 +8,17 @@ function BIDS_tool()
     % 
     % Important: remember to add path to data
     %---------------------------------------------
-  %  directory = '/Users/andrewweng/Data/ds000107';
+%    directory = '/Users/andrewweng/Data/ds000107';
     directory = '/Users/andrewweng/Data/ds000116';
     %---------------------------------------------
     
     %Taskqueue
-    listContents(directory);
     jsonFiles = (trackJson(directory));
     fixJson(jsonFiles,directory);
-    
+    disp(directory);
+    subjectPaths = generateSubjectPaths(directory);
+    disp(subjectPaths);
+    fixSubjectTSV(subjectPaths,directory);
     %complete
     disp('BIDS repair complete')
     disp('done');
@@ -34,35 +36,33 @@ end
 %------------------------------------------------------------------------
 % Functions -------------------------------------------------------------
 %------------------------------------------------------------------------
-%   functions: listContents(rootDirectory)
+%   functions: 
 %              jsonFiles(rootDirectory)
 %              fixJson(jsonFiles,rootDirectory)
 %              spaceToUnderscore(dirtyStr)
+%              subjectIterator(rootDirectory)
+%              fixSubjectTSV(tsvFiles)
 %
 %
-%
-%------------------------------------------------------------------------
-% returns all non-dotfiles in the data directory
-%------------------------------------------------------------------------
-
-function listContents(rootDirectory)
-    folderInfo = dir(rootDirectory);
-    for index = 1:numel(folderInfo)
-        if(folderInfo(index).name ~= "." && folderInfo(index).name ~= "..")
-            a = folderInfo(index).name;
-            %disp(folderInfo(index).name);
-        end
-    end
-end
 
 
 %------------------------------------------------------------------------
 % returns a struct with all .json files
 %------------------------------------------------------------------------
 
-function jsonFiles = trackJson(rootDirectory)
-    filePattern = fullfile (rootDirectory, '*.json');
+function jsonFiles = trackJson(directory)
+    filePattern = fullfile (directory, '*.json');
     jsonFiles = dir(filePattern);
+   
+end
+
+%------------------------------------------------------------------------
+% returns a struct with all .tsv files
+%------------------------------------------------------------------------
+
+function TSVfiles = trackTSV(directory)
+    filePattern = fullfile (directory, '*.tsv');
+    TSVfiles = dir(filePattern);
    
 end
 
@@ -124,17 +124,91 @@ function cleanedStr = spaceToUnderscore(dirtyStr)
     cleanedStr = strrep(dirtyStr," ",'');
 end
 
+%-------------------------------------------------------------------------
+% returns a cell array containing pathnames for each subject.
+%-------------------------------------------------------------------------
+
+function allSubPaths = generateSubjectPaths(directory)
+    
+    folder = dir(directory);
+ 
+    allSubPaths = {};
+ 
+    for index = 1:numel(folder)
+        if(folder(index).name ~= "." && folder(index).name ~= "..")
+                str = string(folder(index).name);
+                if(regexp(str, regexptranslate('wildcard', 'sub*')))
+                    x = folder(index).name;
+                    pathname = [directory,'/',x];
+                    allSubPaths{end+1} = pathname;
+                end
+        end
+    end  
+end
+
+
+
 
 %-------------------------------------------------------------------------
 % checks for "n/a" onset times and deletes rows where present
 %-------------------------------------------------------------------------
 
-function fixOneSubjectTSV(subjectPath)
+function fixSubjectTSV(subjectPaths,dataDirectory)
+
+    disp("FIX TSV");
+    for i = 1:numel(subjectPaths)
+        disp("eachSubject");
+        subjectPath = subjectPaths(i);
+        subjectFuncPath = string(subjectPath + "/func")
+        disp(subjectFuncPath);
+        funcFolder = dir(subjectFuncPath)
+        disp(funcFolder);
+        subTSV = trackTSV(subjectFuncPath);
+        
+        for j = 1:numel(subTSV)
+            disp(subTSV(j));
+            tsvFile = fopen(subTSV(j).name);
+            tline = fgetl(tsvFile);
+            tlines = cell(0,1);
+            numLine = 1;
+            while ischar(tline)
+                onsetDurations = sscanf(tline,'%f');
+                
+                if  ~isempty(onsetDurations) 
+                     
+                        tlines{end+1,1} = tline;
+           
+                elseif numLine == 1
+                         tlines{end+1,1} = tline;
+                end
+                
+                numLine = numLine + 1;
+                
+                tline = fgetl(tsvFile);
+            end
+            fclose(tsvFile);     
+            disp(tlines);
+            
+            %%%%%%%%% writing these back to directory%%%%%%
+            
+            filename = fullfile(subjectFuncPath,"/",subTSV(j).name);
+            disp(filename);
+            fid = fopen(filename + "CLEANEDFINALagain", 'a');
+            if fid == -1, error('Could not create file'); end
+           
+            CharString = sprintf('%s\n', tlines{:});
+            fwrite(fid, CharString,'char');
+            fclose(fid);
+            disp("repair COMPLETE on: " + subTSV(j).name + " ...");
+
+            
+        end
+        
+        
+         
+    end
+    
 
 end
-
-
-
-    
 
 
