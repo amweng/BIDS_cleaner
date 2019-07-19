@@ -157,7 +157,6 @@ function fixSubjectTSV(subjectPaths,dataDirectory)
 
     disp("FIX TSV");
     for i = 1:numel(subjectPaths)
-        disp("eachSubject");
         subjectPath = subjectPaths(i);
         subjectFuncPath = string(subjectPath + "/func")
         disp(subjectFuncPath);
@@ -166,12 +165,12 @@ function fixSubjectTSV(subjectPaths,dataDirectory)
         subTSV = trackTSV(subjectFuncPath);
         
         for j = 1:numel(subTSV)
-            disp(subTSV(j));
             tsvFile = fopen(subTSV(j).name);
             tline = fgetl(tsvFile);
             tlines = cell(0,1);
-            numLine = 1;
+            numLine = 0;
             while ischar(tline)
+                numLine = numLine + 1;
                 onsetDurations = sscanf(tline,'%f');
                 
                 if  numel(onsetDurations) == 2
@@ -182,18 +181,16 @@ function fixSubjectTSV(subjectPaths,dataDirectory)
                          tlines{end+1,1} = tline;
                 end
                 
-                numLine = numLine + 1;
-                
                 tline = fgetl(tsvFile);
             end
             fclose(tsvFile);     
-            disp(tlines);
+           
             
             %%%%%%%%% writing these back to directory%%%%%%
             
             filename = fullfile(subjectFuncPath,"/",subTSV(j).name);
             disp(filename);
-            fid = fopen(filename + "CLEANEDFINALagain", 'a');
+            fid = fopen(filename, 'w');
             if fid == -1, error('Could not create file'); end
            
             CharString = sprintf('%s\n', tlines{:});
