@@ -147,8 +147,6 @@ function allSubPaths = generateSubjectPaths(directory)
 end
 
 
-
-
 %-------------------------------------------------------------------------
 % checks for "n/a" onset times and deletes rows where present
 %-------------------------------------------------------------------------
@@ -165,6 +163,9 @@ function fixSubjectTSV(subjectPaths,dataDirectory)
         subTSV = trackTSV(subjectFuncPath);
         
         for j = 1:numel(subTSV)
+            
+            isBroken = false;
+            
             tsvFile = fopen(subTSV(j).name);
             tline = fgetl(tsvFile);
             tlines = cell(0,1);
@@ -172,9 +173,12 @@ function fixSubjectTSV(subjectPaths,dataDirectory)
             while ischar(tline)
                 numLine = numLine + 1;
                 onsetDurations = sscanf(tline,'%f');
+                if numel(onsetDurations) ~= 2 && numLine ~= 1
+                    isBroken = true;
+                end
                 
                 if  numel(onsetDurations) == 2
-                     
+                        
                         tlines{end+1,1} = tline;
            
                 elseif numLine == 1
@@ -188,16 +192,28 @@ function fixSubjectTSV(subjectPaths,dataDirectory)
             
             %%%%%%%%% writing these back to directory%%%%%%
             
-            filename = fullfile(subjectFuncPath,"/",subTSV(j).name);
-            disp(filename);
-            fid = fopen(filename, 'w');
-            if fid == -1, error('Could not create file'); end
-           
-            CharString = sprintf('%s\n', tlines{:});
-            fwrite(fid, CharString,'char');
-            fclose(fid);
-            disp("repair COMPLETE on: " + subTSV(j).name + " ...");
+            if isBroken
+                
+                filename = fullfile(subjectFuncPath,"/",subTSV(j).name);
+                disp(filename);
+                fid = fopen(filename, 'w');
+                if fid == -1, error('Could not create file'); end
 
+                CharString = sprintf('%s\n', tlines{:});
+                fwrite(fid, CharString,'char');
+                fclose(fid);
+                
+                disp("repair COMPLETE on: " + subTSV(j).name + " ...");
+
+
+                
+            elseif ~isBroken
+                
+                disp("No repair needed on: " + subTSV(j).name );
+                    
+            end
+            
+      
             
         end
         
