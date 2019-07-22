@@ -215,12 +215,5 @@ function fixSubjectTSV(subjectPaths,dataDirectory)
     end
 end
 
-%-------------------------------------------------------------------------
-% convert eventnames to uppercase
-%-------------------------------------------------------------------------
 
-function upperEvents = eventNamesToUpper(string)
-    
-
-end
 
