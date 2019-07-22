@@ -17,7 +17,7 @@ function BIDS_tool()
     fixJson(jsonFiles,directory);
     disp(directory);
     subjectPaths = generateSubjectPaths(directory);
-    disp(subjectPaths);
+ %   disp(subjectPaths);
     fixSubjectTSV(subjectPaths,directory);
     %complete
     disp('BIDS repair complete')
@@ -98,7 +98,7 @@ function fixJson(jsonFiles,dataDirectory)
             stepThreeStr = strrep(stepTwoStr,'\','');
             stepFourStr = strrep(stepThreeStr,'"{','{');
             cleanStr = strrep(stepFourStr,'}"','}');
-   
+        
             filename = fullfile(dataDirectory, currentFilenameStr);
             fid = fopen(filename, 'w');
             if fid == -1, error('Could not create JSON file'); end
@@ -106,6 +106,9 @@ function fixJson(jsonFiles,dataDirectory)
             fclose(fid);
             disp("repair COMPLETE on: " + currentFilenameStr + " ...");
 
+
+
+       
         else
             disp("no repair required on: dataset_description.json ...");
         end
@@ -115,6 +118,9 @@ function fixJson(jsonFiles,dataDirectory)
      disp("JSON repair on root volume COMPLETE");
      disp("------------------------------------------------------");
 end
+
+
+
 
 %-------------------------------------------------------------------------
 % convert spaces in strings to underscores and returns the cleaned string
@@ -156,10 +162,10 @@ function fixSubjectTSV(subjectPaths,dataDirectory)
     disp("FIX TSV");
     for i = 1:numel(subjectPaths)
         subjectPath = subjectPaths(i);
-        subjectFuncPath = string(subjectPath + "/func")
-        disp(subjectFuncPath);
-        funcFolder = dir(subjectFuncPath)
-        disp(funcFolder);
+        subjectFuncPath = string(subjectPath + "/func");
+     %   disp(subjectFuncPath);
+        funcFolder = dir(subjectFuncPath);
+      %  disp(funcFolder);
         subTSV = trackTSV(subjectFuncPath);
         
         for j = 1:numel(subTSV)
@@ -195,7 +201,7 @@ function fixSubjectTSV(subjectPaths,dataDirectory)
             if isBroken
                 
                 filename = fullfile(subjectFuncPath,"/",subTSV(j).name);
-                disp(filename);
+              %  disp(filename);
                 fid = fopen(filename, 'w');
                 if fid == -1, error('Could not create file'); end
 
