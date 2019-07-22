@@ -3,25 +3,27 @@ function BIDS_tool()
 %----------------------------------------------------------------------------------
 % tool to auto-correct errors in BIDS data. (structure/syntax/convention)
 %----------------------------------------------------------------------------------
+   
 
-    % pointme at the top-level BIDS directory
-    % 
-    % Important: remember to add path to data
-    %---------------------------------------------
-%    directory = '/Users/andrewweng/Data/ds000107';
-    directory = '/Users/andrewweng/Data/ds000116';
-    %---------------------------------------------
+    directory = uigetdir('select data directory');
     
-    %Taskqueue
-    jsonFiles = (trackJson(directory));
-    fixJson(jsonFiles,directory);
-    disp(directory);
-    subjectPaths = generateSubjectPaths(directory);
- %   disp(subjectPaths);
-    fixSubjectTSV(subjectPaths,directory);
-    %complete
-    disp('BIDS repair complete')
-    disp('done');
+    if directory == 0
+        disp("please select the data directory and try again");
+        return
+    end
+    if directory ~= 0
+   
+        %Taskqueue
+        jsonFiles = (trackJson(directory));
+        fixJson(jsonFiles,directory);
+        disp(directory);
+        subjectPaths = generateSubjectPaths(directory);
+     %   disp(subjectPaths);
+        fixSubjectTSV(subjectPaths,directory);
+        %complete
+        disp('BIDS repair complete')
+        disp('done');
+    end
 end
 
 
@@ -181,53 +183,44 @@ function fixSubjectTSV(subjectPaths,dataDirectory)
                 onsetDurations = sscanf(tline,'%f');
                 if numel(onsetDurations) ~= 2 && numLine ~= 1
                     isBroken = true;
-                end
-                
+                end                
                 if  numel(onsetDurations) == 2
                         
                         tlines{end+1,1} = tline;
            
                 elseif numLine == 1
                          tlines{end+1,1} = tline;
-                end
-                
+                end                
                 tline = fgetl(tsvFile);
             end
-            fclose(tsvFile);     
-           
-            
+            fclose(tsvFile);             
             %%%%%%%%% writing these back to directory%%%%%%
             
             if isBroken
                 
                 filename = fullfile(subjectFuncPath,"/",subTSV(j).name);
-              %  disp(filename);
                 fid = fopen(filename, 'w');
                 if fid == -1, error('Could not create file'); end
-
                 CharString = sprintf('%s\n', tlines{:});
                 fwrite(fid, CharString,'char');
                 fclose(fid);
-                
                 disp("repair COMPLETE on: " + subTSV(j).name + " ...");
-
-
                 
             elseif ~isBroken
                 
                 disp("No repair needed on: " + subTSV(j).name );
                     
-            end
-            
-      
-            
-        end
-        
-        
-         
+            end      
+        end         
     end
+end
+
+%-------------------------------------------------------------------------
+% convert eventnames to uppercase
+%-------------------------------------------------------------------------
+
+function upperEvents = eventNamesToUpper(string)
     
 
 end
-
 
