@@ -18,33 +18,27 @@ function BIDS_tool()
         fixJson(jsonFiles,directory);
         subjectPaths = generateSubjectPaths(directory);
         fixTSV(subjectPaths,directory);
-        fixfmap(subjectPaths,directory);
+        fixfmap(subjectPaths);
+        disp('=============================================');
         disp('BIDS repair complete')
         disp('done');
     end
 end
 
 
-
-
-
-
-
-
-
-
 %------------------------------------------------------------------------
 % Functions -------------------------------------------------------------
 %------------------------------------------------------------------------
 %   functions: 
-%              jsonFiles(rootDirectory)
+%              trackJSON(rootDirectory)
+%              trackTSV(rootDirectory)
 %              fixJson(jsonFiles,rootDirectory)
 %              spaceToUnderscore(dirtyStr)
-%              subjectIterator(rootDirectory)
+%              generateSubjectPaths(direct)
 %              fixSubjectTSV(tsvFiles)
+%               
 %
 %
-
 
 %------------------------------------------------------------------------
 % returns a struct with all .json files
@@ -99,19 +93,23 @@ function fixJson(jsonFiles,dataDirectory)
             stepThreeStr = strrep(stepTwoStr,'\','');
             stepFourStr = strrep(stepThreeStr,'"{','{');
             cleanStr = strrep(stepFourStr,'}"','}');
+            
+            if ~strcmp(cleanStr,stepZeroStr)
         
-            filename = fullfile(dataDirectory, currentFilenameStr);
-            fid = fopen(filename, 'w');
-            if fid == -1, error('Could not create JSON file'); end
-            fwrite(fid, cleanStr, 'char');
-            fclose(fid);
-            disp("repair COMPLETE on: " + currentFilenameStr + "\ ...");
+                filename = fullfile(dataDirectory, currentFilenameStr);
+                fid = fopen(filename, 'w');
+                if fid == -1, error('Could not create JSON file'); end
+                fwrite(fid, cleanStr, 'char');
+                fclose(fid);
+                disp("repair COMPLETE on: " + currentFilenameStr );
+            
+            else
+                 disp("no repair required on " + currentFilenameStr);
+            end
+                
 
-
-
-       
         else
-            disp("no repair required on: dataset_description.json ...");
+            disp("no repair required on: dataset_description.json");
         end
         disp(" ");
     end
@@ -119,8 +117,6 @@ function fixJson(jsonFiles,dataDirectory)
      disp("JSON repair on root volume COMPLETE");
      disp("------------------------------------------------------");
 end
-
-
 
 
 %-------------------------------------------------------------------------
@@ -164,9 +160,6 @@ function fixTSV(subjectPaths,dataDirectory)
     for i = 1:numel(subjectPaths)
         subjectPath = subjectPaths(i);
         subjectFuncPath = string(subjectPath + "/func");
-     %   disp(subjectFuncPath);
-        funcFolder = dir(subjectFuncPath);
-      %  disp(funcFolder);
         subTSV = trackTSV(subjectFuncPath);
         
         for j = 1:numel(subTSV)
@@ -194,12 +187,15 @@ function fixTSV(subjectPaths,dataDirectory)
                         
                         if ~contains(fixedline, 'trial_type')
                             fixedline = strrep(fixedline,'trial','trial_type');
+                            fixedline = strrep(fixedline,'trials','trial_type');
+                            fixedline = strrep(fixedline,'trialname','trial_type');
+                            fixedline = strrep(fixedline,'trial_name','trial_type');
                         end
                         if ~strcmp(fixedline,tline) 
                             isBroken = true;
                         end
                         
-                         tlines{end+1,1} = fixedline;
+                        tlines{end+1,1} = fixedline;
                 end                
                 tline = fgetl(tsvFile);
             end
@@ -220,32 +216,40 @@ function fixTSV(subjectPaths,dataDirectory)
                 
                 disp("No repair needed on: " + subTSV(j).name );
                     
-            end      
-        end         
+            end   
+        end     
+        disp(' ');
     end
 end
 
 
 %-------------------------------------------------------------------------
 % fixes issue: magnitude1.json and magnitude2.json should not reside in the
-% fmap directory.
+% fmap directory. (AA will throw an erroneous error if these are included)
 %-------------------------------------------------------------------------
-function fixfmap(subjectPaths, directory)
+function fixfmap(subjectPaths)
 
     disp("fix FMAP");
+    fmapModified = false;
     for i = 1:numel(subjectPaths)
         subjectPath = subjectPaths(i);
         subjectFmapPath = string(subjectPath + "/fmap");
-        disp(subjectFmapPath);
         fmapJSON = trackJson(subjectFmapPath);
-        disp(fmapJSON);
         for j = 1:numel(fmapJSON)
-            jsonName = fmapJSON(j).name
+            jsonName = fmapJSON(j).name;
             if contains(jsonName,'magnitude1') || contains(jsonName,'magnitude2')
-                
+                delete(subjectFmapPath + "/" + fmapJSON(j).name);
+                disp("deleted unneeded: " + fmapJSON(j).name);
+                fmapModified = true;
             end
             
         end
+        if fmapModified
+            disp("deleted unneded magnitude1.json && magnitude2.json from " + subjectPaths(i) + "/fmap");
+        else
+            disp("no changes made to " + subjectPaths(i) + "/fmap");
+        end
+        
         
     end
   

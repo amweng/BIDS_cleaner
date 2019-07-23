@@ -26,26 +26,20 @@ function BIDS_tool()
 end
 
 
-
-
-
-
-
-
-
-
 %------------------------------------------------------------------------
 % Functions -------------------------------------------------------------
 %------------------------------------------------------------------------
 %   functions: 
-%              jsonFiles(rootDirectory)
+%              trackJSON(rootDirectory)
+%              trackTSV(rootDirectory)
 %              fixJson(jsonFiles,rootDirectory)
 %              spaceToUnderscore(dirtyStr)
-%              subjectIterator(rootDirectory)
-%              fixSubjectTSV(tsvFiles)
+%              generateSubjectPaths(directory)
+%              fixTSV(subjectpaths,datadirectory)
+%              fixFMAP(
+%               
 %
 %
-
 
 %------------------------------------------------------------------------
 % returns a struct with all .json files
@@ -124,8 +118,6 @@ function fixJson(jsonFiles,dataDirectory)
      disp("JSON repair on root volume COMPLETE");
      disp("------------------------------------------------------");
 end
-
-
 
 
 %-------------------------------------------------------------------------
