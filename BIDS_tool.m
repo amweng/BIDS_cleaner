@@ -19,6 +19,7 @@ function BIDS_tool()
         subjectPaths = generateSubjectPaths(directory);
         fixTSV(subjectPaths,directory);
         fixfmap(subjectPaths);
+        disp('=============================================');
         disp('BIDS repair complete')
         disp('done');
     end
@@ -224,8 +225,9 @@ function fixTSV(subjectPaths,dataDirectory)
                 
                 disp("No repair needed on: " + subTSV(j).name );
                     
-            end      
-        end         
+            end   
+        end     
+        disp(' ');
     end
 end
 
