@@ -16,11 +16,9 @@ function BIDS_tool()
         %Taskqueue
         jsonFiles = (trackJson(directory));
         fixJson(jsonFiles,directory);
-        disp(directory);
         subjectPaths = generateSubjectPaths(directory);
-     %   disp(subjectPaths);
-        fixSubjectTSV(subjectPaths,directory);
-        %complete
+        fixTSV(subjectPaths,directory);
+        fixfmap(subjectPaths,directory);
         disp('BIDS repair complete')
         disp('done');
     end
@@ -94,7 +92,8 @@ function fixJson(jsonFiles,dataDirectory)
     
         if(currentFilenameStr ~= 'dataset_description.json')     
             stepZeroStr = spaceToUnderscore(dirtyStr);
-            dirtyJsonStr = jsonencode(stepZeroStr);   
+            cleanTabStr = regexprep(stepZeroStr, '\t', ' ');
+            dirtyJsonStr = jsonencode(cleanTabStr);   
             stepOneStr = strrep(dirtyJsonStr,'\n','');
             stepTwoStr = strrep(stepOneStr,'""','');
             stepThreeStr = strrep(stepTwoStr,'\','');
@@ -106,7 +105,7 @@ function fixJson(jsonFiles,dataDirectory)
             if fid == -1, error('Could not create JSON file'); end
             fwrite(fid, cleanStr, 'char');
             fclose(fid);
-            disp("repair COMPLETE on: " + currentFilenameStr + " ...");
+            disp("repair COMPLETE on: " + currentFilenameStr + "\ ...");
 
 
 
@@ -159,7 +158,7 @@ end
 % checks for "n/a" onset times and deletes rows where present
 %-------------------------------------------------------------------------
 
-function fixSubjectTSV(subjectPaths,dataDirectory)
+function fixTSV(subjectPaths,dataDirectory)
 
     disp("FIX TSV");
     for i = 1:numel(subjectPaths)
@@ -181,15 +180,25 @@ function fixSubjectTSV(subjectPaths,dataDirectory)
             while ischar(tline)
                 numLine = numLine + 1;
                 onsetDurations = sscanf(tline,'%f');
-                if numel(onsetDurations) ~= 2 && numLine ~= 1
+                if numel(onsetDurations) < 2 && numLine ~= 1
                     isBroken = true;
                 end                
-                if  numel(onsetDurations) == 2
+                if  numel(onsetDurations) >= 2
                         
+                       
                         tlines{end+1,1} = tline;
            
-                elseif numLine == 1
-                         tlines{end+1,1} = tline;
+                elseif numLine == 1 
+                        % we are in the header
+                        noSpaces = strrep(tline,' ','_');
+                        fixedline = strrep(noSpaces,'trial','trial_type');
+                        fixedline = strrep(fixedline,'trials','trial_type');
+                        fixedline = strrep(fixedline,'trialname','trial_type');
+                        if ~strcmp(fixedline,tline) 
+                            isBroken = true;
+                        end
+                        
+                         tlines{end+1,1} = fixedline;
                 end                
                 tline = fgetl(tsvFile);
             end
@@ -216,4 +225,12 @@ function fixSubjectTSV(subjectPaths,dataDirectory)
 end
 
 
+%-------------------------------------------------------------------------
+% fixes issue:  .json for magnitude 1 & 2 should not reside inside fmap
+% dir
+%-------------------------------------------------------------------------
+function fixfmap(subjectPaths, directory)
+
+
+end
 
