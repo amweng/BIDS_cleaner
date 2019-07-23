@@ -242,7 +242,7 @@ function fixfmap(subjectPaths, directory)
         for j = 1:numel(fmapJSON)
             jsonName = fmapJSON(j).name
             if contains(jsonName,'magnitude1') || contains(jsonName,'magnitude2')
-                delete(subjectFmapPath + "/" + fmapJSON(j).name);
+                
             end
             
         end
