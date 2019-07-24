@@ -34,8 +34,9 @@ end
 %              trackTSV(rootDirectory)
 %              fixJson(jsonFiles,rootDirectory)
 %              spaceToUnderscore(dirtyStr)
-%              generateSubjectPaths(direct)
-%              fixSubjectTSV(tsvFiles)
+%              generateSubjectPaths(directory)
+%              fixTSV(subjectpaths,datadirectory)
+%              fixFMAP(
 %               
 %
 %
@@ -175,10 +176,11 @@ function fixTSV(subjectPaths,dataDirectory)
                 onsetDurations = sscanf(tline,'%f');
                 if numel(onsetDurations) < 2 && numLine ~= 1
                     isBroken = true;
-                end                
+                end  
+                
+                %if both onset and durations are present && the values are
+                %numbers, writ
                 if  numel(onsetDurations) >= 2
-                        
-                       
                         tlines{end+1,1} = tline;
            
                 elseif numLine == 1 

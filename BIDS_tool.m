@@ -174,12 +174,15 @@ function fixTSV(subjectPaths,dataDirectory)
             while ischar(tline)
                 numLine = numLine + 1;
                 onsetDurations = sscanf(tline,'%f');
+                
+                %track if there is an error in the data
                 if numel(onsetDurations) < 2 && numLine ~= 1
                     isBroken = true;
-                end                
+                end  
+                
+                %if both onset and durations are present && the values are
+                %numbers, write the line.
                 if  numel(onsetDurations) >= 2
-                        
-                       
                         tlines{end+1,1} = tline;
            
                 elseif numLine == 1 
@@ -192,6 +195,8 @@ function fixTSV(subjectPaths,dataDirectory)
                             fixedline = strrep(fixedline,'trialname','trial_type');
                             fixedline = strrep(fixedline,'trial_name','trial_type');
                         end
+                        
+                        %track if there is an error in the header
                         if ~strcmp(fixedline,tline) 
                             isBroken = true;
                         end
