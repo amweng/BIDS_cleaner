@@ -4,9 +4,11 @@ function BIDS_tool()
 % tool to auto-correct errors in BIDS data. (structure/syntax/convention)
 %----------------------------------------------------------------------------------
    
+   
     directory = uigetdir('select data directory');
+    addpath(genpath(directory));
     problemLog = {};
- 
+    
     if directory == 0
         disp("please select the data directory and try again");
         return
