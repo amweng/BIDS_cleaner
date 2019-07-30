@@ -22,7 +22,6 @@ function BIDS_tool()
         subjectPaths = generateSubjectPaths(directory);
         jsonFiles = (trackJson(directory));
    %   
-
  
         problemLog{end+1} = fixJson(jsonFiles,directory,problemLog);
         problemLog{end+1} = fixTSV(subjectPaths,directory,problemLog);
@@ -30,8 +29,10 @@ function BIDS_tool()
         problemLog{end+1} = fixCorruption(subjectPaths,directory,problemLog);
         disp('=============================================');
         disp('BIDS repair complete');
+        disp('=============================================');
         
         %Log all the problems encountered
+        hasProblem = false;
         if ~isempty(problemLog)
             disp('Problems encountered: ');     
             for i = 1:numel(problemLog)          
@@ -41,12 +42,17 @@ function BIDS_tool()
                         problemMessage = problems{j};
                         if(isstring(problemMessage))
                             disp(problemMessage);
+                            hasProblem  = true;
                         end
                     end
                 end       
             end             
         end
-      
+        if ~hasProblem
+            disp("no problems found in data volume");
+        end
+        
+        disp('=============================================');
         disp('done');
     end
 end
@@ -359,11 +365,16 @@ function problemLog = fixCorruption(subjectPaths,directory,problemLog)
                     isCorrupted = true;
                     corruptionLog{end+1} = msg;
                     
-                    msg = ("RENAMING SUBJECT WITH CORRUPTED FILE: " + subjectPaths{i} + " => 'CORRUPTED'");
+                    oldFileName = string(subjectPaths{i});
+                           
+                    randomNum = randi([0,1000]);
+                    newFileName = directory + "/CORRUPTED"+randomNum;
+                    
+                    
+                    msg = ("RENAMING SUBJECT WITH CORRUPTED FILE: " + subjectPaths{i} + " => 'CORRUPTED" + randomNum +'');
                     disp(msg);
                     corruptionLog{end+1} = msg;
-                    oldFileName = string(subjectPaths{i});
-                    newFileName = directory + "/CORRUPTED";
+                    
                     command = 'mv ' + oldFileName + ' ' + newFileName;
                     [status,cmdout] = system(command);
                 end
