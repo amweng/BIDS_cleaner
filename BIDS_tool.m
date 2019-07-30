@@ -61,7 +61,9 @@ function BIDS_tool()
             disp("no problems found in data volume");
         end
         
-        problemLogOutput = directory + "/BIDS_tool_repairLog.txt";
+        disp('=============================================');
+        disp("Writing repair log to BIDS_tool_repair_log.txt");
+        problemLogOutput = directory + "/BIDS_tool_repair_log.txt";
         fid = fopen(problemLogOutput, 'w');
         if fid == -1, error('Could not create problemLog file'); end
         CharString = sprintf('%s\n', problemLines{:});
