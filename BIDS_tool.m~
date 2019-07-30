@@ -7,6 +7,8 @@ function BIDS_tool()
 
  %%%   directory = uigetdir('select data directory');
  
+    problemLog = {};
+ 
     directory = '/Users/andrewweng/Data/ds000116';
     
     if directory == 0
@@ -16,14 +18,41 @@ function BIDS_tool()
     if directory ~= 0
    
         %Taskqueue
-   %     jsonFiles = (trackJson(directory));
-   %     fixJson(jsonFiles,directory);
+        
         subjectPaths = generateSubjectPaths(directory);
-   %     fixTSV(subjectPaths,directory);
-   %     fixfmap(subjectPaths);
-        checkCorruption(subjectPaths);
+        jsonFiles = (trackJson(directory));
+   %   
+
+ 
+        problemLog{end+1} = fixJson(jsonFiles,directory,problemLog);
+        problemLog{end+1} = fixTSV(subjectPaths,directory,problemLog);
+        problemLog{end+1} = fixfmap(subjectPaths,problemLog);
+        problemLog{end+1} = fixCorruption(subjectPaths,problemLog);
         disp('=============================================');
-        disp('BIDS repair complete')
+        disp('BIDS repair complete');
+        
+        if ~isempty(problemLog)
+            disp('Problems encountered: ');
+            
+            for i = 1:numel(problemLog)
+                
+                problems = problemLog{i};
+                
+                if ~isempty(problems)
+                    
+                    for j = 1:numel(problems)
+                        problemMessage = problems{j};
+                        if(isstring(problemMessage))
+                            disp(problemMessage);
+                        end
+                    end
+                end
+                    
+       
+            end
+              
+        end
+      
         disp('done');
     end
 end
@@ -69,7 +98,7 @@ end
 % fixes JSON files
 %------------------------------------------------------------------------
 
-function fixJson(jsonFiles,dataDirectory)
+function problemLog = fixJson(jsonFiles,dataDirectory,problemLog)
     for i = 1:numel(jsonFiles)    
         disp("fix JSON");
         disp("file being repaired: " + jsonFiles(i).name);
@@ -105,7 +134,9 @@ function fixJson(jsonFiles,dataDirectory)
                 if fid == -1, error('Could not create JSON file'); end
                 fwrite(fid, cleanStr, 'char');
                 fclose(fid);
-                disp("repair COMPLETE on: " + currentFilenameStr );
+                msg = ("repair COMPLETE on: " + currentFilenameStr );
+                disp(msg)
+                problemLog{end+1} = msg;
             
             else
                  disp("no repair required on " + currentFilenameStr);
@@ -158,7 +189,7 @@ end
 % checks for "n/a" onset times and deletes rows where present
 %-------------------------------------------------------------------------
 
-function fixTSV(subjectPaths,dataDirectory)
+function problemLog = fixTSV(subjectPaths,dataDirectory,problemLog)
 
     disp("fix TSV");
     for i = 1:numel(subjectPaths)
@@ -170,62 +201,79 @@ function fixTSV(subjectPaths,dataDirectory)
             
             isBroken = false;
             
+            CHECK = subTSV(j).name;
+            
             tsvFile = fopen(subTSV(j).name);
-            tline = fgetl(tsvFile);
-            tlines = cell(0,1);
-            numLine = 0;
-            while ischar(tline)
-                numLine = numLine + 1;
-                onsetDurations = sscanf(tline,'%f');
+            
+            if tsvFile ~= -1
                 
-                %track if there is an error in the data
-                if numel(onsetDurations) < 2 && numLine ~= 1
-                    isBroken = true;
+
+                tline = fgetl(tsvFile);
+                tlines = cell(0,1);
+                numLine = 0;
+                while ischar(tline)
+                    numLine = numLine + 1;
+                    onsetDurations = sscanf(tline,'%f');
+
+                    %track if there is an error in the data
+                    if numel(onsetDurations) < 2 && numLine ~= 1
+                        isBroken = true;
+                    end  
+
+                    %if both onset and durations are present && the values are
+                    %numbers, write the line.
+                    if  numel(onsetDurations) >= 2
+                            tlines{end+1,1} = tline;
+
+                    elseif numLine == 1 
+                            % we are in the header
+                            fixedline = strrep(tline,' ','_');
+
+                            if ~contains(fixedline, 'trial_type')
+                                fixedline = strrep(fixedline,'trial','trial_type');
+                                fixedline = strrep(fixedline,'trials','trial_type');
+                                fixedline = strrep(fixedline,'trialname','trial_type');
+                                fixedline = strrep(fixedline,'trial_name','trial_type');
+                            end
+
+                            %track if there is an error in the header
+                            if ~strcmp(fixedline,tline) 
+                                isBroken = true;
+                            end
+
+                            tlines{end+1,1} = fixedline;
+                    end                
+                    tline = fgetl(tsvFile);
+                end
+                fclose(tsvFile);             
+                %%%%%%%%% writing these back to directory%%%%%%
+
+                if isBroken
+
+                    filename = fullfile(subjectFuncPath,"/",subTSV(j).name);
+                    fid = fopen(filename, 'w');
+                    if fid == -1, error('Could not create file'); end
+                    CharString = sprintf('%s\n', tlines{:});
+                    fwrite(fid, CharString,'char');
+                    fclose(fid);
+                    msg = ("repair COMPLETE on: " + subTSV(j).name + " ...");
+                    disp(msg);
+                    problemLog{end+1} = msg;
+
+                elseif ~isBroken
+
+                    disp("No repair needed on: " + subTSV(j).name );
+
                 end  
                 
-                %if both onset and durations are present && the values are
-                %numbers, write the line.
-                if  numel(onsetDurations) >= 2
-                        tlines{end+1,1} = tline;
-           
-                elseif numLine == 1 
-                        % we are in the header
-                        fixedline = strrep(tline,' ','_');
-                        
-                        if ~contains(fixedline, 'trial_type')
-                            fixedline = strrep(fixedline,'trial','trial_type');
-                            fixedline = strrep(fixedline,'trials','trial_type');
-                            fixedline = strrep(fixedline,'trialname','trial_type');
-                            fixedline = strrep(fixedline,'trial_name','trial_type');
-                        end
-                        
-                        %track if there is an error in the header
-                        if ~strcmp(fixedline,tline) 
-                            isBroken = true;
-                        end
-                        
-                        tlines{end+1,1} = fixedline;
-                end                
-                tline = fgetl(tsvFile);
+                
+            else
+                msg = "there was an error opening " + CHECK ;
+                disp(msg);
+                problemLog{end+1} = msg;
             end
-            fclose(tsvFile);             
-            %%%%%%%%% writing these back to directory%%%%%%
             
-            if isBroken
-                
-                filename = fullfile(subjectFuncPath,"/",subTSV(j).name);
-                fid = fopen(filename, 'w');
-                if fid == -1, error('Could not create file'); end
-                CharString = sprintf('%s\n', tlines{:});
-                fwrite(fid, CharString,'char');
-                fclose(fid);
-                disp("repair COMPLETE on: " + subTSV(j).name + " ...");
-                
-            elseif ~isBroken
-                
-                disp("No repair needed on: " + subTSV(j).name );
-                    
-            end   
+             
         end     
         disp(' ');
     end
@@ -236,7 +284,7 @@ end
 % fixes issue: magnitude1.json and magnitude2.json should not reside in the
 % fmap directory. (AA will throw an erroneous error if these are included)
 %-------------------------------------------------------------------------
-function fixfmap(subjectPaths)
+function problemLog = fixfmap(subjectPaths,problemLog)
 
     disp("fix FMAP");
     fmapModified = false;
@@ -254,7 +302,9 @@ function fixfmap(subjectPaths)
             
         end
         if fmapModified
-            disp("deleted unneded magnitude1.json && magnitude2.json from " + subjectPaths(i) + "/fmap");
+            msg = ("deleted unneded magnitude1.json && magnitude2.json from " + subjectPaths(i) + "/fmap");
+            disp(msg);
+            problemLog{end+1} = msg;
         else
             disp("no changes made to " + subjectPaths(i) + "/fmap");
         end
@@ -269,14 +319,16 @@ end
 % Scan the volume for corrupted files and if found, eject the subjects 
 % with corrupted files from the volume. Create an alert upon removal.
 %-------------------------------------------------------------------------
-function checkCorruption(subjectPaths)
+function problemLog = fixCorruption(subjectPaths,problemLog)
 
     disp("check Corruption");
-  
+    
+    
+    isCorrupted = false;
+    corruptionLog = {};
+
     for i = 1:numel(subjectPaths)
     
-        isCorrupted = false;
-        corruptionLog = {};
         dataFolders = {};
         subjectPath = subjectPaths(i);
         allDirs = dir(string(subjectPath));
@@ -303,34 +355,41 @@ function checkCorruption(subjectPaths)
                 fullFilePath = folderPath + "/" + zippedFiles(m).name;
                 command = 'cd ' + folderPath + '; gzip -t -v ' + zippedFiles(m).name;
                 [status,cmdout] = system(command);
-                disp('---');
-                disp (cmdout);
+  
+          %      disp (cmdout);
                 idx = regexp(cmdout,'uncompress failed');
                 if ~isempty(idx)
-                    disp("CORRUPTION DISCOVERED");
+                    disp("uncompress failed! : " + fullFilePath);
                     isCorrupted = true;
-                    corruptionLog{end+1} = fullFilePath;
+                    
+                     
                 end
                 
-                disp('---');
+     
             end
             
    
             
         end
         
-        
-       
-        if isCorrupted
-            disp("discovered corruption in: " + );
-        else
-            disp("no changes made ");
-        end
-        
-        
+     
         
     end
-            
+    
+     if isCorrupted
+        for r = 1:numel(corruptionLog)
+            disp("===================================================");
+             msg = ("DISCOVERED CORRUPTION IN: " + corruptionLog{r});
+             disp(msg);
+             problemLog{end+1} = msg;
+             disp("===================================================");
+        end
+     else
+        disp("no corruption discovered in volume ");
+     end
+     
+    
+        
         
     
         
