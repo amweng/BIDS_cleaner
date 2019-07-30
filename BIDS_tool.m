@@ -27,7 +27,7 @@ function BIDS_tool()
         problemLog{end+1} = fixJson(jsonFiles,directory,problemLog);
         problemLog{end+1} = fixTSV(subjectPaths,directory,problemLog);
         problemLog{end+1} = fixfmap(subjectPaths,problemLog);
-        problemLog{end+1} = fixCorruption(subjectPaths,problemLog);
+        problemLog{end+1} = fixCorruption(subjectPaths,directory,problemLog);
         disp('=============================================');
         disp('BIDS repair complete');
         
@@ -313,8 +313,9 @@ end
 % Scan the volume for corrupted files and if found, eject the subjects 
 % with corrupted files from the volume. Create an alert upon removal.
 %-------------------------------------------------------------------------
-function problemLog = fixCorruption(subjectPaths,problemLog)
+function problemLog = fixCorruption(subjectPaths,directory,problemLog)
 
+    disp(" ");
     disp("check Corruption");
     
     
@@ -357,7 +358,14 @@ function problemLog = fixCorruption(subjectPaths,problemLog)
                     disp(msg);
                     isCorrupted = true;
                     corruptionLog{end+1} = msg;
-                     
+                    
+                    msg = ("RENAMING SUBJECT WITH CORRUPTED FILE: " + subjectPaths{i} + " => 'CORRUPTED'");
+                    disp(msg);
+                    corruptionLog{end+1} = msg;
+                    oldFileName = string(subjectPaths{i});
+                    newFileName = directory + "/CORRUPTED";
+                    command = 'mv ' + oldFileName + ' ' + newFileName;
+                    [status,cmdout] = system(command);
                 end
                 
      
@@ -374,10 +382,10 @@ function problemLog = fixCorruption(subjectPaths,problemLog)
      if isCorrupted
         for r = 1:numel(corruptionLog)
             disp("===================================================");
-             msg = ("DISCOVERED CORRUPTION IN: " + corruptionLog{r});
+             msg = ("DATA CORRUPTION: " + corruptionLog{r});
              disp(msg);
              problemLog{end+1} = msg;
-             disp("===================================================");
+            
         end
      else
         disp("no corruption discovered in volume ");

@@ -27,30 +27,24 @@ function BIDS_tool()
         problemLog{end+1} = fixJson(jsonFiles,directory,problemLog);
         problemLog{end+1} = fixTSV(subjectPaths,directory,problemLog);
         problemLog{end+1} = fixfmap(subjectPaths,problemLog);
-        problemLog{end+1} = fixCorruption(subjectPaths,problemLog);
+        problemLog{end+1} = fixCorruption(subjectPaths,directory,problemLog);
         disp('=============================================');
         disp('BIDS repair complete');
         
+        %Log all the problems encountered
         if ~isempty(problemLog)
-            disp('Problems encountered: ');
-            
-            for i = 1:numel(problemLog)
-                
-                problems = problemLog{i};
-                
-                if ~isempty(problems)
-                    
+            disp('Problems encountered: ');     
+            for i = 1:numel(problemLog)          
+                problems = problemLog{i};               
+                if ~isempty(problems)                   
                     for j = 1:numel(problems)
                         problemMessage = problems{j};
                         if(isstring(problemMessage))
                             disp(problemMessage);
                         end
                     end
-                end
-                    
-       
-            end
-              
+                end       
+            end             
         end
       
         disp('done');
@@ -319,8 +313,9 @@ end
 % Scan the volume for corrupted files and if found, eject the subjects 
 % with corrupted files from the volume. Create an alert upon removal.
 %-------------------------------------------------------------------------
-function problemLog = fixCorruption(subjectPaths,problemLog)
+function problemLog = fixCorruption(subjectPaths,directory,problemLog)
 
+    disp(" ");
     disp("check Corruption");
     
     
@@ -359,10 +354,20 @@ function problemLog = fixCorruption(subjectPaths,problemLog)
           %      disp (cmdout);
                 idx = regexp(cmdout,'uncompress failed');
                 if ~isempty(idx)
-                    disp("uncompress failed! : " + fullFilePath);
+                    msg = ("uncompress failed! : " + fullFilePath);
+                    disp(msg);
                     isCorrupted = true;
+                    corruptionLog{end+1} = msg;
                     
-                     
+                    msg = ("RENAMING SUBJECT WITH CORRUPTED FILE: " + subjectPaths{i} + " => 'CORRUPTED'");
+                    disp(msg);
+                    corruptionLog{end+1} = msg;
+                    oldFileName = string(subjectPaths{i});
+                    newFileName = directory + "/CORRUPTED";
+     
+                    command = 'mv ' + oldFileName + ' ' + newFileName;
+                    [status,cmdout] = system(command);
+                    disp(cmdout);
                 end
                 
      
@@ -382,7 +387,7 @@ function problemLog = fixCorruption(subjectPaths,problemLog)
              msg = ("DISCOVERED CORRUPTION IN: " + corruptionLog{r});
              disp(msg);
              problemLog{end+1} = msg;
-             disp("===================================================");
+            
         end
      else
         disp("no corruption discovered in volume ");
