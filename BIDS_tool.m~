@@ -141,8 +141,6 @@ function problemLog = fixJson(jsonFiles,dataDirectory,problemLog)
             else
                  disp("no repair required on " + currentFilenameStr);
             end
-                
-
         else
             disp("no repair required on: dataset_description.json");
         end
@@ -199,12 +197,9 @@ function problemLog = fixTSV(subjectPaths,dataDirectory,problemLog)
         
         for j = 1:numel(subTSV)
             
-            isBroken = false;
-            
+            isBroken = false;         
             CHECK = subTSV(j).name;
-            
-            tsvFile = fopen(subTSV(j).name);
-            
+            tsvFile = fopen(subTSV(j).name);        
             if tsvFile ~= -1
                 
 
@@ -256,24 +251,18 @@ function problemLog = fixTSV(subjectPaths,dataDirectory,problemLog)
                     CharString = sprintf('%s\n', tlines{:});
                     fwrite(fid, CharString,'char');
                     fclose(fid);
-                    msg = ("repair COMPLETE on: " + subTSV(j).name + " ...");
+                    msg = ("fixed header on: " + subTSV(j).name + " ...");
                     disp(msg);
                     problemLog{end+1} = msg;
 
                 elseif ~isBroken
-
                     disp("No repair needed on: " + subTSV(j).name );
-
-                end  
-                
-                
+                end                 
             else
                 msg = "there was an error opening " + CHECK ;
                 disp(msg);
                 problemLog{end+1} = msg;
-            end
-            
-             
+            end           
         end     
         disp(' ');
     end
@@ -298,8 +287,7 @@ function problemLog = fixfmap(subjectPaths,problemLog)
                 delete(subjectFmapPath + "/" + fmapJSON(j).name);
                 disp("deleted unneeded: " + fmapJSON(j).name);
                 fmapModified = true;
-            end
-            
+            end           
         end
         if fmapModified
             msg = ("deleted unneded magnitude1.json && magnitude2.json from " + subjectPaths(i) + "/fmap");
@@ -307,12 +295,8 @@ function problemLog = fixfmap(subjectPaths,problemLog)
             problemLog{end+1} = msg;
         else
             disp("no changes made to " + subjectPaths(i) + "/fmap");
-        end
-        
-        
+        end        
     end
-  
-
 end
 
 %-------------------------------------------------------------------------

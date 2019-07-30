@@ -134,7 +134,7 @@ function problemLog = fixJson(jsonFiles,dataDirectory,problemLog)
                 if fid == -1, error('Could not create JSON file'); end
                 fwrite(fid, cleanStr, 'char');
                 fclose(fid);
-                msg = ("repair COMPLETE on: " + currentFilenameStr );
+                msg = ("repaired JSON formatting on: " + currentFilenameStr );
                 disp(msg)
                 problemLog{end+1} = msg;
             
@@ -251,7 +251,7 @@ function problemLog = fixTSV(subjectPaths,dataDirectory,problemLog)
                     CharString = sprintf('%s\n', tlines{:});
                     fwrite(fid, CharString,'char');
                     fclose(fid);
-                    msg = ("repair COMPLETE on: " + subTSV(j).name + " ...");
+                    msg = ("fixed header and/or deleted problematic n/a on: " + subTSV(j).name + " ...");
                     disp(msg);
                     problemLog{end+1} = msg;
 
@@ -259,7 +259,7 @@ function problemLog = fixTSV(subjectPaths,dataDirectory,problemLog)
                     disp("No repair needed on: " + subTSV(j).name );
                 end                 
             else
-                msg = "there was an error opening " + CHECK ;
+                msg = "DATA CORRUPTION: there was an error opening " + CHECK ;
                 disp(msg);
                 problemLog{end+1} = msg;
             end           
