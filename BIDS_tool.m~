@@ -33,16 +33,7 @@ function BIDS_tool()
         
         %Log all the problems encountered
         
-          problemLogOutput = directory + "/BIDS_tool_repairLog";
-          fid = fopen(filename, 'w');
-                    if fid == -1, error('Could not create problemLog file'); end
-                    CharString = sprintf('%s\n', tlines{:});
-                    fwrite(fid, CharString,'char');
-                    fclose(fid);
-                    msg = ("fixed header and/or deleted problematic n/a on: " + subTSV(j).name + " ...");
-                    disp(msg);
-                    problemLog{end+1} = msg;
-        
+      
         problemLines = {};
         
         
@@ -57,15 +48,27 @@ function BIDS_tool()
                         if(isstring(problemMessage))
                             disp(problemMessage);
                             hasProblem  = true;
+                            problemLines{end+1,1} = problemMessage;
                         end
                     end
                 end       
             end             
         end
+        
+        %prints problem log to a BIDS_tool_repairLog.txt
         if ~hasProblem
+            problemLines{end+1} = "there were no problems with the dataset that BIDS_tool could identify";
             disp("no problems found in data volume");
         end
         
+        disp('=============================================');
+        disp("Writing repair log to BIDS_tool_repair_log.txt");
+        problemLogOutput = directory + "/BIDS_tool_repair_log.txt";
+        fid = fopen(problemLogOutput, 'w');
+        if fid == -1, error('Could not create problemLog file'); end
+        CharString = sprintf('%s\n', problemLines{:});
+        fwrite(fid, CharString,'char');
+        fclose(fid);    
         disp('=============================================');
         disp('done');
     end

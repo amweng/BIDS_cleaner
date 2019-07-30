@@ -4,13 +4,9 @@ function BIDS_tool()
 % tool to auto-correct errors in BIDS data. (structure/syntax/convention)
 %----------------------------------------------------------------------------------
    
-
- %%%   directory = uigetdir('select data directory');
- 
+    directory = uigetdir('select data directory');
     problemLog = {};
  
-    directory = '/Users/andrewweng/Data/ds000116';
-    
     if directory == 0
         disp("please select the data directory and try again");
         return
@@ -21,8 +17,6 @@ function BIDS_tool()
         
         subjectPaths = generateSubjectPaths(directory);
         jsonFiles = (trackJson(directory));
-   %   
- 
         problemLog{end+1} = fixJson(jsonFiles,directory,problemLog);
         problemLog{end+1} = fixTSV(subjectPaths,directory,problemLog);
         problemLog{end+1} = fixfmap(subjectPaths,problemLog);
@@ -68,13 +62,7 @@ function BIDS_tool()
         if fid == -1, error('Could not create problemLog file'); end
         CharString = sprintf('%s\n', problemLines{:});
         fwrite(fid, CharString,'char');
-        fclose(fid);
-                 
-        
-        
-        
-        
-        
+        fclose(fid);    
         disp('=============================================');
         disp('done');
     end
