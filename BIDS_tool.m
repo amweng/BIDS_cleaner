@@ -141,8 +141,6 @@ function problemLog = fixJson(jsonFiles,dataDirectory,problemLog)
             else
                  disp("no repair required on " + currentFilenameStr);
             end
-                
-
         else
             disp("no repair required on: dataset_description.json");
         end
@@ -199,12 +197,9 @@ function problemLog = fixTSV(subjectPaths,dataDirectory,problemLog)
         
         for j = 1:numel(subTSV)
             
-            isBroken = false;
-            
+            isBroken = false;         
             CHECK = subTSV(j).name;
-            
-            tsvFile = fopen(subTSV(j).name);
-            
+            tsvFile = fopen(subTSV(j).name);        
             if tsvFile ~= -1
                 
 
@@ -261,19 +256,13 @@ function problemLog = fixTSV(subjectPaths,dataDirectory,problemLog)
                     problemLog{end+1} = msg;
 
                 elseif ~isBroken
-
                     disp("No repair needed on: " + subTSV(j).name );
-
-                end  
-                
-                
+                end                 
             else
                 msg = "there was an error opening " + CHECK ;
                 disp(msg);
                 problemLog{end+1} = msg;
-            end
-            
-             
+            end           
         end     
         disp(' ');
     end
@@ -298,8 +287,7 @@ function problemLog = fixfmap(subjectPaths,problemLog)
                 delete(subjectFmapPath + "/" + fmapJSON(j).name);
                 disp("deleted unneeded: " + fmapJSON(j).name);
                 fmapModified = true;
-            end
-            
+            end           
         end
         if fmapModified
             msg = ("deleted unneded magnitude1.json && magnitude2.json from " + subjectPaths(i) + "/fmap");
@@ -307,12 +295,8 @@ function problemLog = fixfmap(subjectPaths,problemLog)
             problemLog{end+1} = msg;
         else
             disp("no changes made to " + subjectPaths(i) + "/fmap");
-        end
-        
-        
+        end        
     end
-  
-
 end
 
 %-------------------------------------------------------------------------
@@ -322,9 +306,7 @@ end
 function problemLog = fixCorruption(subjectPaths,directory,problemLog)
 
     disp(" ");
-    disp("check Corruption");
-    
-    
+    disp("check Corruption");  
     isCorrupted = false;
     corruptionLog = {};
 
@@ -345,8 +327,7 @@ function problemLog = fixCorruption(subjectPaths,directory,problemLog)
             
             dataFolder = (dataFolders{j});
             folderName = dataFolder.name;
-            dataDir = dataFolder.folder;
-            
+            dataDir = dataFolder.folder;        
             folderPath = dataDir + "/" + folderName;
             filePattern = fullfile(folderPath, '*.gz');
             zippedFiles = dir(filePattern);
@@ -356,66 +337,38 @@ function problemLog = fixCorruption(subjectPaths,directory,problemLog)
                 fullFilePath = folderPath + "/" + zippedFiles(m).name;
                 command = 'cd ' + folderPath + '; gzip -t -v ' + zippedFiles(m).name;
                 [status,cmdout] = system(command);
-  
-          %      disp (cmdout);
                 idx = regexp(cmdout,'uncompress failed');
                 if ~isempty(idx)
                     msg = ("uncompress failed! : " + fullFilePath);
                     disp(msg);
                     isCorrupted = true;
-                    corruptionLog{end+1} = msg;
                     
-                    oldFileName = string(subjectPaths{i});
-                           
+                    %log that there was a corruption
+                    corruptionLog{end+1} = msg;                   
+                    oldFileName = string(subjectPaths{i});                         
                     randomNum = randi([0,10000]);
-                    newFileName = directory + "/corruptedSubject_"+randomNum;
-                    
-                    
+                    newFileName = directory + "/corruptedSubject_"+randomNum;                   
                     msg = ("RENAMING SUBJECT WITH CORRUPTED FILE: " + subjectPaths{i} + " => 'corruptedSubject_" + randomNum +'');
                     disp(msg);
-                    corruptionLog{end+1} = msg;
-                    
+                    %log the rename
+                    corruptionLog{end+1} = msg;                 
                     command = 'mv ' + oldFileName + ' ' + newFileName;
                     [status,cmdout] = system(command);
-                end
-                
-     
-            end
-            
-   
-            
-        end
-        
-     
-        
-    end
-    
+                end   
+            end    
+        end       
+    end   
      if isCorrupted
         for r = 1:numel(corruptionLog)
             disp("===================================================");
              msg = ("DATA CORRUPTION: " + corruptionLog{r});
              disp(msg);
-             problemLog{end+1} = msg;
-            
+             problemLog{end+1} = msg;            
         end
      else
         disp("no corruption discovered in volume ");
-     end
-     
-    
-        
-        
-    
-        
+     end  
 end
-
-
-
-
-
-
-
-
 
 
 %-------------------------------------------------------------------------

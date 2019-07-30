@@ -22,7 +22,6 @@ function BIDS_tool()
         subjectPaths = generateSubjectPaths(directory);
         jsonFiles = (trackJson(directory));
    %   
-
  
         problemLog{end+1} = fixJson(jsonFiles,directory,problemLog);
         problemLog{end+1} = fixTSV(subjectPaths,directory,problemLog);
@@ -30,8 +29,10 @@ function BIDS_tool()
         problemLog{end+1} = fixCorruption(subjectPaths,directory,problemLog);
         disp('=============================================');
         disp('BIDS repair complete');
+        disp('=============================================');
         
         %Log all the problems encountered
+        hasProblem = false;
         if ~isempty(problemLog)
             disp('Problems encountered: ');     
             for i = 1:numel(problemLog)          
@@ -41,12 +42,17 @@ function BIDS_tool()
                         problemMessage = problems{j};
                         if(isstring(problemMessage))
                             disp(problemMessage);
+                            hasProblem  = true;
                         end
                     end
                 end       
             end             
         end
-      
+        if ~hasProblem
+            disp("no problems found in data volume");
+        end
+        
+        disp('=============================================');
         disp('done');
     end
 end
@@ -316,9 +322,7 @@ end
 function problemLog = fixCorruption(subjectPaths,directory,problemLog)
 
     disp(" ");
-    disp("check Corruption");
-    
-    
+    disp("check Corruption");  
     isCorrupted = false;
     corruptionLog = {};
 
@@ -339,8 +343,7 @@ function problemLog = fixCorruption(subjectPaths,directory,problemLog)
             
             dataFolder = (dataFolders{j});
             folderName = dataFolder.name;
-            dataDir = dataFolder.folder;
-            
+            dataDir = dataFolder.folder;        
             folderPath = dataDir + "/" + folderName;
             filePattern = fullfile(folderPath, '*.gz');
             zippedFiles = dir(filePattern);
@@ -350,63 +353,38 @@ function problemLog = fixCorruption(subjectPaths,directory,problemLog)
                 fullFilePath = folderPath + "/" + zippedFiles(m).name;
                 command = 'cd ' + folderPath + '; gzip -t -v ' + zippedFiles(m).name;
                 [status,cmdout] = system(command);
-  
-          %      disp (cmdout);
                 idx = regexp(cmdout,'uncompress failed');
                 if ~isempty(idx)
                     msg = ("uncompress failed! : " + fullFilePath);
                     disp(msg);
                     isCorrupted = true;
-                    corruptionLog{end+1} = msg;
                     
-                    msg = ("RENAMING SUBJECT WITH CORRUPTED FILE: " + subjectPaths{i} + " => 'CORRUPTED'");
+                    %log that there was a corruption
+                    corruptionLog{end+1} = msg;                   
+                    oldFileName = string(subjectPaths{i});                         
+                    randomNum = randi([0,10000]);
+                    newFileName = directory + "/corruptedSubject_"+randomNum;                   
+                    msg = ("RENAMING SUBJECT WITH CORRUPTED FILE: " + subjectPaths{i} + " => 'corruptedSubject_" + randomNum +'');
                     disp(msg);
-                    corruptionLog{end+1} = msg;
-                    oldFileName = string(subjectPaths{i});
-                    newFileName = directory + "/CORRUPTED";
-     
+                    %log the rename
+                    corruptionLog{end+1} = msg;                 
                     command = 'mv ' + oldFileName + ' ' + newFileName;
                     [status,cmdout] = system(command);
-                    disp(cmdout);
-                end
-                
-     
-            end
-            
-   
-            
-        end
-        
-     
-        
-    end
-    
+                end   
+            end    
+        end       
+    end   
      if isCorrupted
         for r = 1:numel(corruptionLog)
             disp("===================================================");
-             msg = ("DISCOVERED CORRUPTION IN: " + corruptionLog{r});
+             msg = ("DATA CORRUPTION: " + corruptionLog{r});
              disp(msg);
-             problemLog{end+1} = msg;
-            
+             problemLog{end+1} = msg;            
         end
      else
         disp("no corruption discovered in volume ");
-     end
-     
-    
-        
-        
-    
-        
+     end  
 end
-
-
-
-
-
-
-
-
 
 
 %-------------------------------------------------------------------------
