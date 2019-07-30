@@ -368,10 +368,10 @@ function problemLog = fixCorruption(subjectPaths,directory,problemLog)
                     oldFileName = string(subjectPaths{i});
                            
                     randomNum = randi([0,1000]);
-                    newFileName = directory + "/CORRUPTED"+randomNum;
+                    newFileName = directory + "/corruptedSubject_"+randomNum;
                     
                     
-                    msg = ("RENAMING SUBJECT WITH CORRUPTED FILE: " + subjectPaths{i} + " => 'CORRUPTED" + randomNum +'');
+                    msg = ("RENAMING SUBJECT WITH CORRUPTED FILE: " + subjectPaths{i} + " => 'corruptedSubject_" + randomNum +'');
                     disp(msg);
                     corruptionLog{end+1} = msg;
                     
