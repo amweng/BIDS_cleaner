@@ -359,8 +359,8 @@ function problemLog = fixCorruption(subjectPaths,directory,problemLog)
         end       
     end   
      if isCorrupted
+        disp("===================================================");
         for r = 1:numel(corruptionLog)
-            disp("===================================================");
              msg = ("DATA CORRUPTION: " + corruptionLog{r});
              disp(msg);
              problemLog{end+1} = msg;            
