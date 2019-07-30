@@ -272,13 +272,11 @@ end
 function checkCorruption(subjectPaths)
 
     disp("check Corruption");
-    
-    
-    isCorrupted = false;
-    corruptionLog = {};
-
+  
     for i = 1:numel(subjectPaths)
     
+        isCorrupted = false;
+        corruptionLog = {};
         dataFolders = {};
         subjectPath = subjectPaths(i);
         allDirs = dir(string(subjectPath));
@@ -305,36 +303,34 @@ function checkCorruption(subjectPaths)
                 fullFilePath = folderPath + "/" + zippedFiles(m).name;
                 command = 'cd ' + folderPath + '; gzip -t -v ' + zippedFiles(m).name;
                 [status,cmdout] = system(command);
-  
-          %      disp (cmdout);
+                disp('---');
+                disp (cmdout);
                 idx = regexp(cmdout,'uncompress failed');
                 if ~isempty(idx)
-                    disp("uncompress failed! : " + fullFilePath);
+                    disp("CORRUPTION DISCOVERED");
                     isCorrupted = true;
                     corruptionLog{end+1} = fullFilePath;
                 end
                 
-     
+                disp('---');
             end
             
    
             
         end
         
-     
+        
+       
+        if isCorrupted
+            disp("discovered corruption in: " + );
+        else
+            disp("no changes made ");
+        end
+        
+        
         
     end
-    
-     if isCorrupted
-        for r = 1:numel(corruptionLog)
-            disp("===================================================");
-             disp("DISCOVERED CORRUPTION IN: " + corruptionLog{r});
-             disp("===================================================");
-        end
-     else
-        disp("no corruption discovered in volume ");
-     end
-        
+            
         
     
         
