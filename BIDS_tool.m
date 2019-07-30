@@ -32,6 +32,11 @@ function BIDS_tool()
         disp('=============================================');
         
         %Log all the problems encountered
+        
+      
+        problemLines = {};
+        
+        
         hasProblem = false;
         if ~isempty(problemLog)
             disp('Problems encountered: ');     
@@ -43,14 +48,30 @@ function BIDS_tool()
                         if(isstring(problemMessage))
                             disp(problemMessage);
                             hasProblem  = true;
+                            problemLines{end+1,1} = problemMessage;
                         end
                     end
                 end       
             end             
         end
+        
+        %prints problem log to a BIDS_tool_repairLog.txt
         if ~hasProblem
+            problemLines{end+1} = "there were no problems with the dataset that BIDS_tool could identify";
             disp("no problems found in data volume");
         end
+        
+        problemLogOutput = directory + "/BIDS_tool_repairLog.txt";
+        fid = fopen(problemLogOutput, 'w');
+        if fid == -1, error('Could not create problemLog file'); end
+        CharString = sprintf('%s\n', problemLines{:});
+        fwrite(fid, CharString,'char');
+        fclose(fid);
+                 
+        
+        
+        
+        
         
         disp('=============================================');
         disp('done');
