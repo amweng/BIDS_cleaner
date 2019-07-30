@@ -262,3 +262,14 @@ function fixfmap(subjectPaths)
 
 end
 
+%-------------------------------------------------------------------------
+% Scan the volume for corrupted files and if found, eject the subjects 
+% with corrupted files from the volume. Create an alert upon removal.
+%-------------------------------------------------------------------------
+function checkCorruption
+end
+
+
+
+
+
