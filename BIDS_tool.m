@@ -151,7 +151,7 @@ function problemLog = fixJson(jsonFiles,dataDirectory,problemLog)
                 if fid == -1, error('Could not create JSON file'); end
                 fwrite(fid, cleanStr, 'char');
                 fclose(fid);
-                msg = ("WARNING: repaired JSON formatting on: " + currentFilenameStr );
+                msg = ("WARNING: repaired JSON formatting on: " + jsonFiles(i).folder +"/"+ currentFilenameStr );
                 disp(msg)
                 problemLog{end+1} = msg;
             
@@ -205,6 +205,8 @@ end
 %-------------------------------------------------------------------------
 
 function problemLog = fixTSV(subjectPaths,dataDirectory,problemLog)
+
+    tsvLog = {};
 
     disp("fix TSV");
     for i = 1:numel(subjectPaths)
