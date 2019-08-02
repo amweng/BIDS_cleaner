@@ -151,7 +151,7 @@ function problemLog = fixJson(jsonFiles,dataDirectory,problemLog)
                 if fid == -1, error('Could not create JSON file'); end
                 fwrite(fid, cleanStr, 'char');
                 fclose(fid);
-                msg = ("repaired JSON formatting on: " + currentFilenameStr );
+                msg = ("WARNING: repaired JSON formatting on: " + currentFilenameStr );
                 disp(msg)
                 problemLog{end+1} = msg;
             
@@ -268,7 +268,7 @@ function problemLog = fixTSV(subjectPaths,dataDirectory,problemLog)
                     CharString = sprintf('%s\n', tlines{:});
                     fwrite(fid, CharString,'char');
                     fclose(fid);
-                    msg = ("fixed header and/or deleted problematic n/a on: " + subTSV(j).name + " ...");
+                    msg = ("WARNING: fixed header and/or deleted problematic n/a on: " + subTSV(j).name + " ...");
                     disp(msg);
                     problemLog{end+1} = msg;
 
@@ -307,7 +307,7 @@ function problemLog = fixfmap(subjectPaths,problemLog)
             end           
         end
         if fmapModified
-            msg = ("deleted unneded magnitude1.json && magnitude2.json from " + subjectPaths(i) + "/fmap");
+            msg = ("WARNING: deleted unneded magnitude1.json && magnitude2.json from " + subjectPaths(i) + "/fmap");
             disp(msg);
             problemLog{end+1} = msg;
         else
@@ -492,6 +492,7 @@ function problemLog = verifySameFiles(subjectPaths, directory, problemLog)
                             msg = ("    This subject has " + numel(subjectAnat) + " anat files instead of the expected " + numel(standardAnat));
                             disp(msg)
                             discrepancyLog{end+1} ="WARNING: " + subjectPaths(i) + ":" + msg;
+                            discrepancyLog{end+1} = "PLEASE CHECK: " + subjectPaths(i);
                             hasDiscrepancy = true;
                         end
                     case "func"
@@ -509,6 +510,7 @@ function problemLog = verifySameFiles(subjectPaths, directory, problemLog)
                             msg = ("    This subject has " + numel(subjectFunc) + " func files instead of the expected " + numel(standardFunc));
                             disp(msg)
                             discrepancyLog{end+1} ="WARNING: " + subjectPaths(i) + ":" + msg;
+                            discrepancyLog{end+1} = "PLEASE CHECK: " + subjectPaths(i);
                             hasDiscrepancy = true;
                         end
                     case "dwi"
@@ -526,6 +528,7 @@ function problemLog = verifySameFiles(subjectPaths, directory, problemLog)
                             msg = ("    This subject has " + numel(subjectDWI) + " dwi files instead of the expected " + numel(standardDWI));
                             disp(msg)
                             discrepancyLog{end+1} ="WARNING: " + subjectPaths(i) + ":" + msg;
+                            discrepancyLog{end+1} = "PLEASE CHECK: " + subjectPaths(i);
                             hasDiscrepancy = true;
                         end
                     case "fmap"
@@ -543,6 +546,7 @@ function problemLog = verifySameFiles(subjectPaths, directory, problemLog)
                             msg = ("    This subject has " + numel(subjectFMAP) + " fmap files instead of the expected " + numel(standardFMAP));
                             disp(msg)
                             discrepancyLog{end+1} = "WARNING: " + subjectPaths(i) + ":" + msg;
+                            discrepancyLog{end+1} = "PLEASE CHECK: " + subjectPaths(i);
                             hasDiscrepancy = true;
                         end
                 end
@@ -552,6 +556,7 @@ function problemLog = verifySameFiles(subjectPaths, directory, problemLog)
             msg = ("this subject is missing 1 or more data folders");
             disp(msg);
             discrepancyLog{end+1} = "WARNING: " + subjectPaths(i) + ":    does not contain the expected no. of data folders";
+            discrepancyLog{end+1} = "PLEASE CHECK: " + subjectPaths(i);
             hasDiscrepancy = true;
         end   
     end
