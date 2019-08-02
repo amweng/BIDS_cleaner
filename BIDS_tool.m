@@ -21,11 +21,11 @@ function BIDS_tool()
         %Taskqueue
         
         subjectPaths = generateSubjectPaths(directory);
-      %  jsonFiles = (trackJson(directory));
-      %  problemLog{end+1} = fixJson(jsonFiles,directory,problemLog);
-      %  problemLog{end+1} = fixTSV(subjectPaths,directory,problemLog);
-      %  problemLog{end+1} = fixfmap(subjectPaths,problemLog);
-      %  problemLog{end+1} = fixCorruption(subjectPaths,directory,problemLog);
+        jsonFiles = (trackJson(directory));
+        problemLog{end+1} = fixJson(jsonFiles,directory,problemLog);
+        problemLog{end+1} = fixTSV(subjectPaths,directory,problemLog);
+        problemLog{end+1} = fixfmap(subjectPaths,problemLog);
+        problemLog{end+1} = fixCorruption(subjectPaths,directory,problemLog);
         problemLog{end+1} = verifySameFiles(subjectPaths,directory,problemLog);
         disp('=============================================');
         disp('BIDS repair complete');
