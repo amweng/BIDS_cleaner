@@ -5,9 +5,9 @@ function BIDS_tool()
 %----------------------------------------------------------------------------------
    
    
-   % directory = uigetdir('select data directory');
+    directory = uigetdir('select data directory');
    
-    directory = '/Users/andrewweng/Data/ds000170';
+   % directory = '/Users/andrewweng/Data/ds000170';
    
     addpath(genpath(directory));
     problemLog = {};
@@ -406,7 +406,7 @@ function problemLog = verifySameFiles(subjectPaths, directory, problemLog)
     standardAnat = {};
     standardFunc = {};
     standardDWI = {};
-    standardFmap = {};
+    standardFMAP = {};
 
     
     for (k = 1:numel(standardDirs))
@@ -465,7 +465,7 @@ function problemLog = verifySameFiles(subjectPaths, directory, problemLog)
         subjectAnat = {};
         subjectFunc = {};
         subjectDWI = {};
-        subjectFmap = {};
+        subjectFMAP = {};
             
         disp("-----------------------------------------------------");
         disp("checking: " + subjectPaths(i));   
@@ -521,7 +521,7 @@ function problemLog = verifySameFiles(subjectPaths, directory, problemLog)
                         end
                         disp("    This subject has " + numel(subjectDWI) + " dwi files.");
                         if numel(subjectDWI) == numel(standardDWI)
-                            disp("This subject has the expected no. of dwi files.");
+                            disp("    This subject has the expected no. of dwi files.");
                         else
                             msg = ("    This subject has " + numel(subjectDWI) + " dwi files instead of the expected " + numel(standardDWI));
                             disp(msg)
@@ -536,9 +536,9 @@ function problemLog = verifySameFiles(subjectPaths, directory, problemLog)
                                 subjectFMAP{end+1} = fmapContents(l).name;
                             end 
                         end
-                        disp("    This subject has " + numel(subjectFmap) + " fmap files.");
-                        if numel(subjectFMAP) == numel(standardFmap)
-                            disp("This subject has the expected no. of fmap files.");
+                        disp("    This subject has " + numel(subjectFMAP) + " fmap files.");
+                        if numel(subjectFMAP) == numel(standardFMAP)
+                            disp("    This subject has the expected no. of fmap files.");
                         else
                             msg = ("    This subject has " + numel(subjectFMAP) + " fmap files instead of the expected " + numel(standardFMAP));
                             disp(msg)
