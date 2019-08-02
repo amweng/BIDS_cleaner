@@ -456,7 +456,8 @@ function problemLog = verifySameFiles(subjectPaths, directory, problemLog)
         end
     end
     
-    disp("---");
+    disp("--------------------------------------------------------------------------------");
+    disp("comparing the rest of the volumes for consistency...");
     
     for i = 1:numel(subjectPaths)
         
@@ -466,9 +467,8 @@ function problemLog = verifySameFiles(subjectPaths, directory, problemLog)
         subjectDWI = {};
         subjectFmap = {};
             
-        disp("__________________");
-        disp("checking: " + subjectPaths(i));
-            
+        disp("-----------------------------------------------------");
+        disp("checking: " + subjectPaths(i));   
         subjectDirs = dir(string(subjectPaths(i)));
         for j = 1:numel(subjectDirs)
             subjectDir = subjectDirs(j).name;
@@ -547,24 +547,22 @@ function problemLog = verifySameFiles(subjectPaths, directory, problemLog)
                         end
                 end
             end
-        end
-                
+        end         
         if numel(subjectDataFolders) ~= numel(dataFolders)
             msg = ("this subject is missing 1 or more data folders");
             disp(msg);
-            discrepancyLog{end+1} = "WARNING: " + subjectPaths(i) + ":    is missing one or more data folders";
+            discrepancyLog{end+1} = "WARNING: " + subjectPaths(i) + ":    does not contain the expected no. of data folders";
             hasDiscrepancy = true;
         end   
     end
-
-   
-    % done checking subject volumes
-    
+    % done checking subject volumes 
     if hasDiscrepancy
-        disp("===================================================");
+        disp("=============================================");
         for r = 1:numel(discrepancyLog)
-             msg = ("discrepancy in filestructure discovered: " + discrepancyLog{r});
+             msg = (discrepancyLog{r});
              disp(msg);
+             
+             %write this to the problemLog
              problemLog{end+1} = discrepancyLog{r};            
         end
     else
@@ -572,11 +570,6 @@ function problemLog = verifySameFiles(subjectPaths, directory, problemLog)
     end  
     
 end
-
-
-
-
-
 
 
 %-------------------------------------------------------------------------

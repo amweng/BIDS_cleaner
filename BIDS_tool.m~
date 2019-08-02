@@ -401,12 +401,12 @@ function problemLog = verifySameFiles(subjectPaths, directory, problemLog)
     hasDiscrepancy = false;
     discrepancyLog = {};
     dataFolders = {};
-    standardDirs = dir(string(subjectPaths(1)));
     
+    standardDirs = dir(string(subjectPaths(1)));    
     standardAnat = {};
     standardFunc = {};
     standardDWI = {};
-    standradFmap = {};
+    standardFmap = {};
 
     
     for (k = 1:numel(standardDirs))
@@ -417,60 +417,55 @@ function problemLog = verifySameFiles(subjectPaths, directory, problemLog)
             folderName = (standardDirs(k).name);
             switch folderName
                 case "anat"
-                        anatContents = dir(subjectPaths(1) + "/" + folderName);
-                        for l = 1:numel(anatContents)
-                            fileNameStr = anatContents(l).name;
-                            if (~strcmp(fileNameStr,'.') && ~strcmp(fileNameStr,'..') && ~strcmp(fileNameStr,'.DS_Store'))
-                                disp("    " + anatContents(l).name);
-                                standardAnat{end+1} = anatContents(l).name;
-                            end 
-                        end       
+                    anatContents = dir(subjectPaths(1) + "/" + folderName);
+                    for l = 1:numel(anatContents)
+                        fileNameStr = anatContents(l).name;
+                        if (~strcmp(fileNameStr,'.') && ~strcmp(fileNameStr,'..') && ~strcmp(fileNameStr,'.DS_Store'))
+                            disp("    " + anatContents(l).name);
+                            standardAnat{end+1} = anatContents(l).name;
+                        end 
+                    end       
                 case "func"
-                        funcContents = dir(subjectPaths(1) + "/" + folderName);
-                        for l = 1:numel(funcContents)
-                            fileNameStr = funcContents(l).name;
-                            if (~strcmp(fileNameStr,'.') && ~strcmp(fileNameStr,'..') && ~strcmp(fileNameStr,'.DS_Store'))
-                                disp("    " + funcContents(l).name);
-                                standardFunc{end+1} = funcContents(l).name;
-                            end 
-                        end
+                    funcContents = dir(subjectPaths(1) + "/" + folderName);
+                    for l = 1:numel(funcContents)
+                        fileNameStr = funcContents(l).name;
+                        if (~strcmp(fileNameStr,'.') && ~strcmp(fileNameStr,'..') && ~strcmp(fileNameStr,'.DS_Store'))
+                            disp("    " + funcContents(l).name);
+                            standardFunc{end+1} = funcContents(l).name;
+                        end 
+                    end
                 case "dwi"
-                        dwiContents = dir(subjectPaths(1) + "/" + folderName);
-                        for l = 1:numel(dwiContents)
-                            fileNameStr = dwiContents(l).name;
-                            if (~strcmp(fileNameStr,'.') && ~strcmp(fileNameStr,'..') && ~strcmp(fileNameStr,'.DS_Store'))
-                                disp("    " + dwiContents(l).name);
-                                standardDWI{end+1} = dwiContents(l).name;
-                            end 
-                        end
+                    dwiContents = dir(subjectPaths(1) + "/" + folderName);
+                    for l = 1:numel(dwiContents)
+                        fileNameStr = dwiContents(l).name;
+                        if (~strcmp(fileNameStr,'.') && ~strcmp(fileNameStr,'..') && ~strcmp(fileNameStr,'.DS_Store'))
+                            disp("    " + dwiContents(l).name);
+                            standardDWI{end+1} = dwiContents(l).name;
+                        end 
+                    end
                 case "fmap"
-                        fmapContents = dir(subjectPaths(1) + "/" + folderName);
-                        for l = 1:numel(fmapContents)
-                            fileNameStr = fmapContents(l).name;
-                            if (~strcmp(fileNameStr,'.') && ~strcmp(fileNameStr,'..') && ~strcmp(fileNameStr,'.DS_Store'))
-                                disp("    " + fmapContents(l).name);
-                                standardFMAP{end+1} = fmapContents(l).name;
-                            end 
-                        end
-            end
-          
-                
-                
-                
-                
+                    fmapContents = dir(subjectPaths(1) + "/" + folderName);
+                    for l = 1:numel(fmapContents)
+                        fileNameStr = fmapContents(l).name;
+                        if (~strcmp(fileNameStr,'.') && ~strcmp(fileNameStr,'..') && ~strcmp(fileNameStr,'.DS_Store'))
+                            disp("    " + fmapContents(l).name);
+                            standardFMAP{end+1} = fmapContents(l).name;
+                        end 
+                    end
+            end              
         end
     end
-
     
     disp("---");
     
     for i = 1:numel(subjectPaths)
         
-            subjectDataFolders = {};
-            subjectAnat = {};
-            subjectFunc = {};
-            subjectDWI = {};
-            subjectFmap = {};
+        subjectDataFolders = {};
+        subjectAnat = {};
+        subjectFunc = {};
+        subjectDWI = {};
+        subjectFmap = {};
+            
         disp("__________________");
         disp("checking: " + subjectPaths(i));
             
@@ -478,101 +473,96 @@ function problemLog = verifySameFiles(subjectPaths, directory, problemLog)
         for j = 1:numel(subjectDirs)
             subjectDir = subjectDirs(j).name;
             if(~strcmp(subjectDir,'.') && ~strcmp(subjectDir,'..') && ~strcmp(subjectDir,'.DS_Store'))
+                subjectDataFolders{end+1} = subjectDirs(j);
                 folderName = subjectDirs(j).name;
-                
-                if numel(subjectDirs) ~=  numel(standardDirs)
-                    msg = "subject " + subjectPaths(i) + "is missing one or more data folders.";
-                    disp(msg);
-                    discre
-                end
-                
-                
-
-
-
- 
+               
                 switch folderName
                     case "anat"
-                            anatContents = dir(subjectPaths(i) + "/" + folderName);
-                            for l = 1:numel(anatContents)
-                                fileNameStr = anatContents(l).name;
-                                if (~strcmp(fileNameStr,'.') && ~strcmp(fileNameStr,'..') && ~strcmp(fileNameStr,'.DS_Store'))
-                                    subjectAnat{end+1} = anatContents(l).name;
-                                end 
-                            end       
-                             disp("    This subject has " + numel(subjectAnat) + " anat files.");
-                            if numel(subjectAnat) == numel(standardAnat)
-                                disp("    This subject has the expected no. of anat files.");
-                            else
-                                msg = ("    This subject has " + numel(subjectAnat) + " anat files instead of the expected " + numel(standardAnat));
-                                disp(msg)
-                                discrepancyLog{end+1} ="WARNING: " + subjectPaths(i) + ":" + msg;
-                                hasDiscrepancy = true;
-                            end
+                        anatContents = dir(subjectPaths(i) + "/" + folderName);
+                        for l = 1:numel(anatContents)
+                            fileNameStr = anatContents(l).name;
+                            if (~strcmp(fileNameStr,'.') && ~strcmp(fileNameStr,'..') && ~strcmp(fileNameStr,'.DS_Store'))
+                                subjectAnat{end+1} = anatContents(l).name;
+                            end 
+                        end       
+                         disp("    This subject has " + numel(subjectAnat) + " anat files.");
+                        if numel(subjectAnat) == numel(standardAnat)
+                            disp("    This subject has the expected no. of anat files.");
+                        else
+                            msg = ("    This subject has " + numel(subjectAnat) + " anat files instead of the expected " + numel(standardAnat));
+                            disp(msg)
+                            discrepancyLog{end+1} ="WARNING: " + subjectPaths(i) + ":" + msg;
+                            hasDiscrepancy = true;
+                        end
                     case "func"
-                            funcContents = dir(subjectPaths(i) + "/" + folderName);
-                            for l = 1:numel(funcContents)
-                                fileNameStr = funcContents(l).name;
-                                if (~strcmp(fileNameStr,'.') && ~strcmp(fileNameStr,'..') && ~strcmp(fileNameStr,'.DS_Store'))
-                                    subjectFunc{end+1} = funcContents(l).name;
-                                end 
-                            end
-                            disp("    This subject has " + numel(subjectFunc) + " func files.");
-                            if numel(subjectFunc) == numel(standardFunc)
-                                disp("    This subject has the expected no. of func files. ");
-                            else
-                                msg = ("    This subject has " + numel(subjectFunc) + " func files instead of the expected " + numel(standardFunc));
-                                disp(msg)
-                                discrepancyLog{end+1} ="WARNING: " + subjectPaths(i) + ":" + msg;
-                                hasDiscrepancy = true;
-                            end
+                        funcContents = dir(subjectPaths(i) + "/" + folderName);
+                        for l = 1:numel(funcContents)
+                            fileNameStr = funcContents(l).name;
+                            if (~strcmp(fileNameStr,'.') && ~strcmp(fileNameStr,'..') && ~strcmp(fileNameStr,'.DS_Store'))
+                                subjectFunc{end+1} = funcContents(l).name;
+                            end 
+                        end
+                        disp("    This subject has " + numel(subjectFunc) + " func files.");
+                        if numel(subjectFunc) == numel(standardFunc)
+                            disp("    This subject has the expected no. of func files. ");
+                        else
+                            msg = ("    This subject has " + numel(subjectFunc) + " func files instead of the expected " + numel(standardFunc));
+                            disp(msg)
+                            discrepancyLog{end+1} ="WARNING: " + subjectPaths(i) + ":" + msg;
+                            hasDiscrepancy = true;
+                        end
                     case "dwi"
-                            dwiContents = dir(subjectPaths(i) + "/" + folderName);
-                            for l = 1:numel(dwiContents)
-                                fileNameStr = dwiContents(l).name;
-                                if (~strcmp(fileNameStr,'.') && ~strcmp(fileNameStr,'..') && ~strcmp(fileNameStr,'.DS_Store'))
-                                    subjectDWI{end+1} = dwiContents(l).name;
-                                end 
-                            end
-                            disp("    This subject has " + numel(subjectDWI) + " dwi files.");
-                            if numel(subjectDWI) == numel(standardDWI)
-                                disp("This subject has the expected no. of dwi files.");
-                            else
-                                msg = ("    This subject has " + numel(subjectDWI) + " dwi files instead of the expected " + numel(standardDWI));
-                                disp(msg)
-                                discrepancyLog{end+1} ="WARNING: " + subjectPaths(i) + ":" + msg;
-                                hasDiscrepancy = true;
-                            end
+                        dwiContents = dir(subjectPaths(i) + "/" + folderName);
+                        for l = 1:numel(dwiContents)
+                            fileNameStr = dwiContents(l).name;
+                            if (~strcmp(fileNameStr,'.') && ~strcmp(fileNameStr,'..') && ~strcmp(fileNameStr,'.DS_Store'))
+                                subjectDWI{end+1} = dwiContents(l).name;
+                            end 
+                        end
+                        disp("    This subject has " + numel(subjectDWI) + " dwi files.");
+                        if numel(subjectDWI) == numel(standardDWI)
+                            disp("This subject has the expected no. of dwi files.");
+                        else
+                            msg = ("    This subject has " + numel(subjectDWI) + " dwi files instead of the expected " + numel(standardDWI));
+                            disp(msg)
+                            discrepancyLog{end+1} ="WARNING: " + subjectPaths(i) + ":" + msg;
+                            hasDiscrepancy = true;
+                        end
                     case "fmap"
-                            fmapContents = dir(subjectPaths(i) + "/" + folderName);
-                            for l = 1:numel(fmapContents)
-                                fileNameStr = fmapContents(l).name;
-                                if (~strcmp(fileNameStr,'.') && ~strcmp(fileNameStr,'..') && ~strcmp(fileNameStr,'.DS_Store'))
-                                    subjectFMAP{end+1} = fmapContents(l).name;
-                                end 
-                            end
-                            disp("    This subject has " + numel(subjectFmap) + " fmap files.");
-                            if numel(subjectFMAP) == numel(standardFmap)
-                                disp("This subject has the expected no. of fmap files.");
-                            else
-                                msg = ("    This subject has " + numel(subjectFMAP) + " fmap files instead of the expected " + numel(standardFMAP));
-                                disp(msg)
-                                discrepancyLog{end+1} = "WARNING: " + subjectPaths(i) + ":" + msg;
-                                hasDiscrepancy = true;
-                            end
+                        fmapContents = dir(subjectPaths(i) + "/" + folderName);
+                        for l = 1:numel(fmapContents)
+                            fileNameStr = fmapContents(l).name;
+                            if (~strcmp(fileNameStr,'.') && ~strcmp(fileNameStr,'..') && ~strcmp(fileNameStr,'.DS_Store'))
+                                subjectFMAP{end+1} = fmapContents(l).name;
+                            end 
+                        end
+                        disp("    This subject has " + numel(subjectFmap) + " fmap files.");
+                        if numel(subjectFMAP) == numel(standardFmap)
+                            disp("This subject has the expected no. of fmap files.");
+                        else
+                            msg = ("    This subject has " + numel(subjectFMAP) + " fmap files instead of the expected " + numel(standardFMAP));
+                            disp(msg)
+                            discrepancyLog{end+1} = "WARNING: " + subjectPaths(i) + ":" + msg;
+                            hasDiscrepancy = true;
+                        end
                 end
             end
-        end
-
+        end         
+        if numel(subjectDataFolders) ~= numel(dataFolders)
+            msg = ("this subject is missing 1 or more data folders");
+            disp(msg);
+            discrepancyLog{end+1} = "WARNING: " + subjectPaths(i) + ":    is missing one or more data folders";
+            hasDiscrepancy = true;
+        end   
     end
-
-   
-     
+    % done checking subject volumes 
     if hasDiscrepancy
         disp("===================================================");
         for r = 1:numel(discrepancyLog)
              msg = ("discrepancy in filestructure discovered: " + discrepancyLog{r});
              disp(msg);
+             
+             %write this to the problemLog
              problemLog{end+1} = discrepancyLog{r};            
         end
     else
@@ -580,11 +570,6 @@ function problemLog = verifySameFiles(subjectPaths, directory, problemLog)
     end  
     
 end
-
-
-
-
-
 
 
 %-------------------------------------------------------------------------
