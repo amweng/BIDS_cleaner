@@ -57,6 +57,8 @@ function problemLog = fixTSV(subjectPaths,dataDirectory,problemLog)
                 end
                 fclose(tsvFile);             
                 %%%%%%%%% writing these back to directory%%%%%%
+                %%%%%%%%% TODO log error with link to BIDS
+                %%%%%%%%% specification%%%%%%%%%%%
 
                 if isBroken
 

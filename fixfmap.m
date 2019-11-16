@@ -1,7 +1,7 @@
 function problemLog = fixfmap(subjectPaths,problemLog)
 %-------------------------------------------------------------------------
-% fixes issue: magnitude1.json and magnitude2.json should not reside in the
-% fmap directory. (AA will throw an erroneous error if these are included)
+%  Removes magnitude1 and magnitude2 files from the fmap directory 
+% (AA will throw an error if these are included)
 %-------------------------------------------------------------------------
 
     disp("fix FMAP");
