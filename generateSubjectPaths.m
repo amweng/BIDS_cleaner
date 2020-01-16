@@ -5,7 +5,6 @@ function allSubPaths = generateSubjectPaths(directory)
 
     
     folder = dir(directory);
- 
     allSubPaths = {};
  
     for index = 1:numel(folder)
