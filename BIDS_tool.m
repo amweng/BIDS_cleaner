@@ -27,9 +27,9 @@ function BIDS_tool()
         problemLog{end+1} = fixfmap(subjectPaths,problemLog);
         problemLog{end+1} = fixCorruption(subjectPaths,directory,problemLog);
         problemLog{end+1} = verifySameFiles(subjectPaths,directory,problemLog);
-        disp('=============================================');
-        disp('BIDS repair complete');
-        disp('=============================================');
+        disp('-------------------------------------------------------------');
+        disp('BIDS scan complete');
+        disp('-------------------------------------------------------------');
         
         %Log all the problems encountered
         
@@ -61,7 +61,7 @@ function BIDS_tool()
             disp("no problems found in data volume");
         end
         
-        disp('=============================================');
+        disp('==============================================================');
         disp("Writing repair log to BIDS_tool_repair_log.txt");
         problemLogOutput = directory + "/BIDS_tool_repair_log.txt";
         fid = fopen(problemLogOutput, 'w');
@@ -69,7 +69,6 @@ function BIDS_tool()
         CharString = sprintf('%s\n', problemLines{:});
         fwrite(fid, CharString,'char');
         fclose(fid);    
-        disp('=============================================');
         disp('done');
     end
 end
