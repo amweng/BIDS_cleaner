@@ -91,4 +91,5 @@ function problemLog = fixTSV(subjectPaths,dataDirectory,problemLog)
         end     
         disp(' ');
     end
+    clear tlines
 end

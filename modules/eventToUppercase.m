@@ -52,7 +52,7 @@ function problemlog = eventToUppercase(directory,problemLog)
     msg = ("converted all eventnames to UPPERCASE");
     disp(msg);
     problemLog{end+1} = msg;
-    
+    clear tlines
 
 
 end
