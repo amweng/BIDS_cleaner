@@ -26,7 +26,7 @@ function BIDS_tool()
         problemLog{end+1} = fixTSV(subjectPaths,directory,problemLog);
         problemLog{end+1} = fixfmap(subjectPaths,problemLog);
         problemLog{end+1} = fixCorruption(subjectPaths,directory,problemLog);
-        problemLog{end+1} = verifySameFiles(subjectPaths,directory,problemLog);
+        problemLog{end+1} = fileConsistency(subjectPaths,directory,problemLog);
         disp('-------------------------------------------------------------');
         disp('BIDS scan complete');
         disp('-------------------------------------------------------------');

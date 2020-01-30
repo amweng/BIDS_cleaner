@@ -1,5 +1,5 @@
 
-function problemLog = verifySameFiles(subjectPaths, directory, problemLog)
+function problemLog = fileConsistency(subjectPaths, directory, problemLog)
 
 %-------------------------------------------------------------------------
 % Verify that all subjects contain the same files. 
