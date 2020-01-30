@@ -1,4 +1,4 @@
-function TSVfiles = trackTSV(directory)
+function TSVfiles = getTSV(directory)
 %------------------------------------------------------------------------
 % returns a struct with all .tsv files
 %------------------------------------------------------------------------

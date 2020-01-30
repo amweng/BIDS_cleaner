@@ -1,4 +1,4 @@
-function allSubPaths = generateSubjectPaths(directory)
+function allSubPaths = getPaths(directory)
 %-------------------------------------------------------------------------
 % returns a cell array containing pathnames for each subject.
 %-------------------------------------------------------------------------

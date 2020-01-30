@@ -1,6 +1,6 @@
-function problemLog = fixfmap(subjectPaths,problemLog)
+function problemLog = excludefmap(subjectPaths,problemLog)
 %-------------------------------------------------------------------------
-%  Removes magnitude1 and magnitude2 files from the fmap directory 
+%  excludes magnitude1 and magnitude2 files from the fmap directory 
 % (AA will throw an error if these are included)
 %-------------------------------------------------------------------------
 

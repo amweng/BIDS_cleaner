@@ -1,8 +1,8 @@
 function problemLog = fixCorruption(subjectPaths,directory,problemLog)
 
 %-------------------------------------------------------------------------
-% Scan the volume for corrupted files and if found, eject the subjects 
-% with corrupted files from the volume. Create an alert upon removal.
+% Scan the volume for corrupted files and if found, renames the subjects 
+% with corrupted files to "hide" from aa..
 %-------------------------------------------------------------------------
 
     disp(" ");

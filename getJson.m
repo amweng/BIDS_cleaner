@@ -1,4 +1,4 @@
-function jsonFiles = trackJson(directory)
+function jsonFiles = getJson(directory)
 %------------------------------------------------------------------------
 % returns a struct with all .json files
 %------------------------------------------------------------------------

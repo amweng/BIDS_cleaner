@@ -8,7 +8,7 @@ function problemLog = fixTSV(subjectPaths,dataDirectory,problemLog)
     for i = 1:numel(subjectPaths)
         subjectPath = subjectPaths(i);
         subjectFuncPath = string(subjectPath + "/func");
-        subTSV = trackTSV(subjectFuncPath);
+        subTSV = getTSV(subjectFuncPath);
         
         for j = 1:numel(subTSV)
             
