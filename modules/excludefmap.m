@@ -9,7 +9,7 @@ function problemLog = excludefmap(subjectPaths,problemLog)
     for i = 1:numel(subjectPaths)
         subjectPath = subjectPaths(i);
         subjectFmapPath = string(subjectPath + "/fmap");
-        fmapJSON = trackJson(subjectFmapPath);
+        fmapJSON = getJson(subjectFmapPath);
         for j = 1:numel(fmapJSON)
             jsonName = fmapJSON(j).name;
             if contains(jsonName,'magnitude1') || contains(jsonName,'magnitude2')
