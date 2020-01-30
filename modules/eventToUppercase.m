@@ -1,4 +1,4 @@
-function problemlog = eventToUppercase(directory,problemLog)
+function problemLog = eventToUppercase(directory,problemLog)
 %EVENTTOUPPERCASE Summary of this function goes here
 %   Detailed explanation goes here
     

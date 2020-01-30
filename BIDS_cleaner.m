@@ -71,6 +71,8 @@ function BIDS_cleaner()
         fwrite(fid, CharString,'char');
         fclose(fid);    
         disp('done');
+        
+        clearvars;
     end
 end
 

@@ -38,7 +38,7 @@ function problemLog = fixJson(jsonFiles,dataDirectory,problemLog)
                 if fid == -1, error('Could not create JSON file'); end
                 fwrite(fid, cleanStr, 'char');
                 fclose(fid);
-                msg = ("WARNING: repaired JSON formatting on: " + jsonFiles(i).folder +"/"+ currentFilenameStr );
+                msg = ("repaired JSON formatting on: " + jsonFiles(i).folder +"/"+ currentFilenameStr );
                 disp(msg)
                 problemLog{end+1} = msg;
             
