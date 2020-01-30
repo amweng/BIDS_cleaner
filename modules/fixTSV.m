@@ -5,11 +5,19 @@ function problemLog = fixTSV(subjectPaths,dataDirectory,problemLog)
 %-------------------------------------------------------------------------
 
     disp("fix TSV");
+    
     for i = 1:numel(subjectPaths)
         subjectPath = subjectPaths(i);
         subjectFuncPath = string(subjectPath + "/func");
         subTSV = getTSV(subjectFuncPath);
-        
+        if isempty(subTSV)
+            subjectFuncPath = string(subjectPath+"/*/func");
+            subTSV = getTSV(subjectFuncPath);
+        end
+        if isempty(subTSV)
+            subjectFuncPath = string(subjectPath+"/*/*/func");
+            subTSV = getTSV(subjectFuncPath);
+        end
         for j = 1:numel(subTSV)
             
             isBroken = false;         

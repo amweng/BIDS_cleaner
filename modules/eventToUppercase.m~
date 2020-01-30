@@ -1,7 +1,9 @@
-function problemlog = eventToUppercase(directory,problemLog)
+function problemlog = eventToUppercase()
 %EVENTTOUPPERCASE Summary of this function goes here
 %   Detailed explanation goes here
     
+%TEST
+    directory = uigetdir();
 
     tsvfiles = getTSV(directory);
     subjectPaths = getPaths(directory);
@@ -39,18 +41,11 @@ function problemlog = eventToUppercase(directory,problemLog)
                 end
             end
         for l = 2:numel(tlines)
-            tlines(l) = upper(tlines(l));
+        tlines(l) = upper(tlines(l));
         end
-        
-        fid = fopen(string(fullpaths(k)), 'w');
-        if fid == -1, error('Could not create file'); end
-        CharString = sprintf('%s\n', tlines{:});
-        fwrite(fid, CharString,'char');
-        fclose(fid);
     end
 
     msg = ("converted all eventnames to UPPERCASE");
-    disp(msg);
     problemLog{end+1} = msg;
     
 

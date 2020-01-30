@@ -1,4 +1,4 @@
-function BIDS_tool()
+function BIDS_cleaner()
 
 %----------------------------------------------------------------------------------
 % tool to auto-correct errors in BIDS data. (structure/syntax/convention)
@@ -27,6 +27,7 @@ function BIDS_tool()
         problemLog{end+1} = excludefmap(subjectPaths,problemLog);
         problemLog{end+1} = fixCorruption(subjectPaths,directory,problemLog);
         problemLog{end+1} = fileConsistency(subjectPaths,directory,problemLog);
+        problemLog{end+1} = eventToUppercase(directory,problemLog);
         disp('-------------------------------------------------------------');
         disp('BIDS scan complete');
         disp('-------------------------------------------------------------');
