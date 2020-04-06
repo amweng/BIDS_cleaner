@@ -18,21 +18,17 @@ function problemLog = fixTSV(subjectPaths,dataDirectory,problemLog)
             subjectFuncPath = string(subjectPath+"/*/*/func");
             subTSV = getTSV(subjectFuncPath);
         end
-        for j = 1:numel(subTSV)
-            
+        for j = 1:numel(subTSV)   
             isBroken = false;         
             CHECK = subTSV(j).name;
             tsvFile = fopen(subTSV(j).name);        
             if tsvFile ~= -1
-                
-
                 tline = fgetl(tsvFile);
                 tlines = cell(0,1);
                 numLine = 0;
                 while ischar(tline)
                     numLine = numLine + 1;
                     onsetDurations = sscanf(tline,'%f');
-
                     %track if there is an error in the data
                     if numel(onsetDurations) < 2 && numLine ~= 1
                         isBroken = true;
@@ -67,7 +63,6 @@ function problemLog = fixTSV(subjectPaths,dataDirectory,problemLog)
                 %%%%%%%%% writing these back to directory%%%%%%
                 %%%%%%%%% TODO log error with link to BIDS
                 %%%%%%%%% specification%%%%%%%%%%%
-
                 if isBroken
 
                     filename = fullfile(subjectFuncPath,"/",subTSV(j).name);

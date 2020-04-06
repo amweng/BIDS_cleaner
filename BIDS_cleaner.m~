@@ -23,14 +23,15 @@ function BIDS_cleaner()
        % writes scan log to current matlab directory
         diary BIDS_scan_log;
         
+        
         subjectPaths = getPaths(directory);
         jsonFiles = (getJson(directory));
-        fixJson(jsonFiles,directory,problemLog);
-        fixTSV(subjectPaths,directory,problemLog);
-        excludefmap(subjectPaths,problemLog);
-        fixCorruption(subjectPaths,directory,problemLog);
-        fileConsistency(subjectPaths,directory,problemLog);
-        eventToUppercase(directory,problemLog);
+        problemLog{end+1} = fixJson(jsonFiles,directory,problemLog);
+        problemLog{end+1} = fixTSV(subjectPaths,directory,problemLog);
+        problemLog{end+1} = excludefmap(subjectPaths,problemLog);
+        problemLog{end+1} = fixCorruption(subjectPaths,directory,problemLog);
+        problemLog{end+1} = fileConsistency(subjectPaths,directory,problemLog);
+        problemLog{end+1} = eventToUppercase(directory,problemLog);
         disp('-------------------------------------------------------------');
         disp('BIDS scan complete');
         disp('-------------------------------------------------------------');
@@ -38,12 +39,15 @@ function BIDS_cleaner()
     end
         
         %prints problem log to a BIDS_tool_repairLog.txt
+        if ~hasProblem
+            disp("there were no problems with the dataset that BIDS_tool could identify");
+        end
         diary off;
    
         disp('done');
         
         clearvars;
-
+    end
 end
 
 

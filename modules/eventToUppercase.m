@@ -2,7 +2,7 @@ function problemLog = eventToUppercase(directory,problemLog)
 %EVENTTOUPPERCASE Summary of this function goes here
 %   Detailed explanation goes here
     
-
+    broken = false;
     tsvfiles = getTSV(directory);
     subjectPaths = getPaths(directory);
     for i = 1:numel(subjectPaths)
@@ -18,7 +18,8 @@ function problemLog = eventToUppercase(directory,problemLog)
             subTSV = getTSV(subjectFuncPath);
         end
         if isempty(subTSV)
-            error("could not find any TSV files");
+            broken = true;
+            msg = "could not find TSV in func dir";
         end
        tsvfiles(end+1: end+(length(subTSV))) = subTSV;
     end
@@ -48,8 +49,9 @@ function problemLog = eventToUppercase(directory,problemLog)
         fwrite(fid, CharString,'char');
         fclose(fid);
     end
-
-    msg = ("converted all eventnames to UPPERCASE");
+    if ~broken
+        msg = "converted eventNames to uppercase";
+    end
     disp(msg);
     problemLog{end+1} = msg;
     clear tlines
